@@ -16,7 +16,7 @@ function setup(){
 }
 test('each row mixes all operations and respects the level limits',()=>{
  const t=setup();
- const cap=level=>level<=1?5:level===2?9:level===3?12:level===4?16:level===5?20:Math.min(50,20+(level-5)*5);
+ const cap=level=>level<=1?5:level===2?9:Math.min(50,level+8);
  for(let level=1;level<=15;level++){
   t.run(`player={current_level:${level}};duckOperationBags={}`);
   for(const row of [1,2,3]){
@@ -56,4 +56,16 @@ test('exiting clears partial operation mixes so the next round starts balanced',
  const t=setup();t.run('nextDuckOperation(1);nextDuckOperation(2);nextDuckOperation(3);resetDuck()');
  assert.equal(t.run('Object.keys(duckOperationBags).length'),0);
  for(const row of [1,2,3])assert.equal(t.run(`new Set([nextDuckOperation(${row}),nextDuckOperation(${row}),nextDuckOperation(${row})]).size`),3);
+});
+test('orders and Rush increase gently and require 50 correct orders from level 3',()=>{
+ const t=setup();
+ for(const [level,cap,goal] of [[1,5,10],[2,9,10],[3,11,50],[4,12,50],[5,13,50],[6,14,50],[50,50,50]]){
+  assert.equal(t.run(`maxFactorForLevel(${level})`),cap);
+  assert.equal(t.run(`levelGoal(${level})`),goal);
+  for(const harder of [false,true])for(let i=0;i<100;i++){
+   const q=t.run(`makeQ(${level},${harder})`);
+   assert.ok(q.a>=1&&q.a<=cap&&q.b>=1&&q.b<=cap);
+   assert.equal(q.answer,q.a*q.b);
+  }
+ }
 });

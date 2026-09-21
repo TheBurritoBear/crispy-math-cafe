@@ -48,12 +48,10 @@ function appearancePatch(category,id){
 function maxFactorForLevel(level){
   if(level<=1) return 5;
   if(level===2) return 9;
-  if(level===3) return 12;
-  if(level===4) return 16;
-  if(level===5) return 20;
-  return Math.min(50,20+(level-5)*5);
+  // Level 3 practices through 11; later levels add just one new factor.
+  return Math.min(50,11+Math.max(0,level-3));
 }
-function levelGoal(level){ return level<=3?10:10+(level-3)*5; }
+function levelGoal(level){ return level<3?10:50; }
 function duckGoalForLevel(){ return 20; }
 
 function makeQ(level,harder=false){
@@ -61,7 +59,7 @@ function makeQ(level,harder=false){
   let min=1;
   if(level>=4) min=Math.max(2,Math.floor(max*.2));
   if(harder){
-    max=Math.min(50,max+Math.max(2,Math.floor(level*1.5)));
+    // Rush favors tougher facts within this level, without raising its cap.
     min=Math.max(min,Math.floor(max*.25));
   }
   const span=Math.max(1,max-min+1);
