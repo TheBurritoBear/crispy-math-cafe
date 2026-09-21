@@ -361,6 +361,10 @@ async function finishRush(reason='time'){
   $('rushStart').disabled=false;
   $('rushQuit').disabled=true;
   const elapsed=Math.max(1,60-rush.time);
+  if(reason==='quit'){
+    hideOrderTicket();
+    showPanel('orders');
+  }
   try{
     await rpc('submit_score',{
       p_session_token:sessionToken,p_mode:'rush',p_level:player.current_level,
@@ -559,9 +563,13 @@ async function finishDuck(reason){
     :reason==='misses'?`${DUCK.maxMisses} wrong ducks. Slow down and check each fact. You had ${duck.score} points.`
     :reason==='quit'?`You left with ${duck.score} point${duck.score===1?'':'s'}. Tap Start when you’re ready to try again.`
     :`You got ${duck.score} of ${DUCK.goal} points. So close. Try again!`;
-  over.hidden=false;
-  setDuckStatus(success?'Hint earned! 🎉':'Tap “Try again” to play another round.',success?true:null);
+  over.hidden=reason==='quit';
+  setDuckStatus(success?'Hint earned! 🎉':reason==='quit'?'Round ended.':'Tap “Try again” to play another round.',success?true:null);
   const elapsed=Math.max(1,DUCK.time-duck.time);
+  if(reason==='quit'){
+    hideOrderTicket();
+    showPanel('orders');
+  }
   try{
     await rpc('submit_score',{
       p_session_token:sessionToken,p_mode:'duck_dash',p_level:player.current_level,
