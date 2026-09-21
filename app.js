@@ -106,16 +106,24 @@ function enterGame(){
   nextOrder();
   renderShop();
 }
+function showPanel(panelId){
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('active',b.dataset.tab===panelId));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.add('hidden'));
+  $(panelId).classList.remove('hidden');
+  if(panelId==='leaderboard') loadBoard('rush');
+  if(panelId==='shop') renderShop();
+}
+function openHintGame(){
+  showPanel('duck');
+  updateUnlockUI();
+  $('duckStatus').textContent='You’re out of hints. Beat the goal to earn +1 and jump back to your order.';
+  $('duckStart').focus();
+}
 function updateUnlockUI(){
-  const unlocked=player.current_level>=2;
-  $('duckTab').classList.toggle('locked',!unlocked);
-  $('duckStart').disabled=!unlocked||duck.active;
-  $('duckIntro').textContent=unlocked
-    ?'Beat the goal before time runs out to earn +1 hint. Difficulty scales with your level.'
-    :'Finish Level 1 to unlock this game.';
-  if(!unlocked&&!duck.active){
-    $('duckEquation').textContent='Locked';
-    $('duckStatus').textContent='Complete Level 1 to unlock.';
+  $('duckStart').disabled=duck.active;
+  $('duckIntro').textContent='Beat the goal before time runs out to earn +1 hint. Difficulty scales with your level.';
+  if(!duck.active){
+    $('duckEquation').textContent='Ready';
   }
   $('duckGoal').textContent=duckGoalForLevel(player.current_level);
 }
@@ -126,7 +134,11 @@ function updateUI(){
   $('shopCoinCount').textContent=player.coins;
   $('playerLabel').textContent=player.display_name;
   $('hintLabel').textContent='Hints: '+player.hints;
-  $('hintCountInline').textContent='('+player.hints+' available)';
+  if(player.hints>0){
+    $('hintBtn').innerHTML=`💡 Use hint <span id="hintCountInline">(${player.hints} available)</span>`;
+  }else{
+    $('hintBtn').textContent='🎯 Earn a hint →';
+  }
   $('storeTitle').textContent=player.store_name||'My Chicken Shop';
   $('storeNameEditor').classList.toggle('hidden',player.current_level<2);
   $('storeNameInput').value=player.store_name||'';
@@ -137,8 +149,7 @@ function updateUI(){
   $('shopCopy').textContent=player.current_level<=3
     ?`Let’s fill ${goal} correct orders, at your own pace.`
     :`Level ${player.current_level} takes ${goal} correct orders. Keep the kitchen moving!`;
-  $('chickenAvatar').textContent=chickenEmoji(player.active_chicken);
-  $('chickenAvatar').dataset.style=player.active_chicken;
+  $('chickenAvatar').dataset.style=player.active_chicken||'plain';
   $('chickenStyleLabel').textContent='Serving '+displayStyleName(player.active_chicken).toLowerCase();
   const next=sauces.find(s=>s.level>player.current_level);
   $('nextUnlockText').textContent=next
@@ -240,8 +251,7 @@ async function serveOrder(){
 }
 async function useHint(){
   if(player.hints<=0){
-    $('feedback').textContent='No hints left. Earn more in the Hint Game.';
-    $('feedback').className='feedback bad';
+    openHintGame();
     return;
   }
   $('feedback').textContent=`Hint: count ${currentQ.a} groups of ${currentQ.b}. Try skip-counting by ${currentQ.b}s.`;
@@ -327,7 +337,6 @@ function renderRush(){
 }
 
 function startDuck(){
-  if(player.current_level<2)return;
   clearInterval(duck.timer);
   duck={
     timer:null,time:30,score:0,correct:0,incorrect:0,
@@ -366,7 +375,7 @@ async function finishDuck(success){
   duck.active=false;
   $('duckInput').disabled=true;
   $('duckSubmit').disabled=true;
-  $('duckStart').disabled=player.current_level<2;
+  $('duckStart').disabled=false;
   const finalScore=duck.score+(success?duck.time:0);
   try{
     await rpc('submit_score',{
@@ -378,7 +387,8 @@ async function finishDuck(success){
   }catch(e){}
   if(success){
     await savePlayer({hints:player.hints+1});
-    $('duckStatus').textContent=`Hint earned! 🎉 Final score ${finalScore}.`;
+    $('duckStatus').textContent=`Hint earned! 🎉 Final score ${finalScore}. Returning to your order…`;
+    setTimeout(()=>showPanel('orders'),900);
   }else{
     $('duckStatus').textContent=`Time! You got ${duck.correct}/${duck.target}. Try again for the hint.`;
   }
@@ -455,20 +465,7 @@ async function logout(){
 }
 
 document.querySelectorAll('.tabs button').forEach(btn=>btn.onclick=()=>{
-  if(btn.dataset.tab==='duck'&&player.current_level<2){
-    document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    document.querySelectorAll('.panel').forEach(p=>p.classList.add('hidden'));
-    $('duck').classList.remove('hidden');
-    updateUnlockUI();
-    return;
-  }
-  document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  document.querySelectorAll('.panel').forEach(p=>p.classList.add('hidden'));
-  $(btn.dataset.tab).classList.remove('hidden');
-  if(btn.dataset.tab==='leaderboard')loadBoard('rush');
-  if(btn.dataset.tab==='shop')renderShop();
+  showPanel(btn.dataset.tab);
 });
 document.querySelectorAll('[data-number]').forEach(b=>b.onclick=()=>appendAnswer(b.dataset.number));
 $('clearAnswer').onclick=clearAnswer;
