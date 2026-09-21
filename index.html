@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#8f1d14" />
   <title>Crispy Math Café</title>
-  <link rel="stylesheet" href="styles.css?v=20260920-2040" />
+  <link rel="stylesheet" href="styles.css?v=20260920-2205" />
 </head>
 <body>
   <div class="page-pattern" aria-hidden="true"></div>
@@ -200,26 +200,46 @@
       <section id="duck" class="panel card mode-card hidden">
         <div class="mode-header">
           <div>
-            <div class="section-kicker">EARN EXTRA HINTS</div>
-            <h2>💡 Hint Game: Duck Dash</h2>
-            <p id="duckIntro">Finish Level 1 to unlock this game.</p>
+            <div class="section-kicker">EARN A HINT · CARNIVAL GAME</div>
+            <h2>🦆 Duck Dash</h2>
+            <p id="duckIntro">Reach 20 points in 60 seconds. Higher rows are faster, harder, and worth more.</p>
           </div>
           <div class="mode-badge hint-badge">HINT +1</div>
         </div>
-        <div class="rush-scorebar">
-          <div><span>TIME</span><strong id="duckTime">30s</strong></div>
-          <div><span>SCORE</span><strong id="duckScore">0</strong></div>
-          <div><span>GOAL</span><strong id="duckGoal">5</strong></div>
+
+        <div class="rush-scorebar duck-scorebar">
+          <div><span>TIME</span><strong id="duckTime">60s</strong></div>
+          <div><span>POINTS</span><strong id="duckScore">0</strong></div>
+          <div><span>GOAL</span><strong id="duckGoal">20</strong></div>
         </div>
-        <div class="mode-question">
-          <div class="equation" id="duckEquation">Locked</div>
-          <input id="duckInput" inputmode="numeric" placeholder="Answer" disabled />
+
+        <div id="duckCarnival" class="duck-carnival" aria-label="Three moving duck rows">
+          <div class="duck-lane lane-3">
+            <div class="duck-lane-label"><strong>3 PTS</strong><span>Hardest · fastest →</span></div>
+            <div id="duckLane3" class="duck-lane-playfield"></div>
+          </div>
+          <div class="duck-lane lane-2">
+            <div class="duck-lane-label"><strong>2 PTS</strong><span>Medium · ←</span></div>
+            <div id="duckLane2" class="duck-lane-playfield"></div>
+          </div>
+          <div class="duck-lane lane-1">
+            <div class="duck-lane-label"><strong>1 PT</strong><span>Easiest · slowest →</span></div>
+            <div id="duckLane1" class="duck-lane-playfield"></div>
+          </div>
         </div>
+
+        <div class="duck-answer-panel">
+          <div class="equation duck-equation" id="duckEquation">Tap Start, then tap any duck to choose a problem.</div>
+          <div class="duck-answer-row">
+            <input id="duckInput" inputmode="numeric" placeholder="Answer" disabled />
+            <button id="duckSubmit" class="secondary" disabled>Answer duck</button>
+          </div>
+        </div>
+
         <div class="actions">
-          <button id="duckStart" class="primary" disabled>Start Hint Game</button>
-          <button id="duckSubmit" class="secondary" disabled>Submit answer</button>
+          <button id="duckStart" class="primary">Start Duck Dash</button>
         </div>
-        <p id="duckStatus" class="msg" role="status">Complete Level 1 to unlock.</p>
+        <p id="duckStatus" class="msg" role="status">Tap Start when you’re ready.</p>
       </section>
 
       <section id="shop" class="panel hidden">
@@ -228,7 +248,7 @@
             <div>
               <div class="section-kicker">SPEND YOUR COINS</div>
               <h2>🛍 Coin shop</h2>
-              <p>Collect special chicken looks. Level requirements still apply.</p>
+              <p>The shop is open from the start. Special chicken looks can still have their own level requirements.</p>
             </div>
             <div class="mode-badge coin-mode"><span id="shopCoinCount">0</span> 🪙</div>
           </div>
@@ -269,6 +289,6 @@
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=20260920-2040"></script>
+  <script src="app.js?v=20260920-2205"></script>
 </body>
 </html>
