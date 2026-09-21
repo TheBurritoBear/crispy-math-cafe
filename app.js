@@ -450,13 +450,10 @@ function chickenPreviewMarkup(style='plain',mini=false,color='natural',costume='
         <path d="M12 77 Q55 91 98 77" fill="none" stroke="#f6d5ff" stroke-width="4"/>
         <path d="M43 33 L55 38 L67 33 L67 47 L55 42 L43 47Z" fill="#f6bff0" stroke="#2a1a11" stroke-width="2" stroke-linejoin="round"/>
         <circle cx="55" cy="40" r="4" fill="#ffd45a" stroke="#2a1a11" stroke-width="2"/>
-        <g fill="var(--feather-wing)" stroke="#2a1a11" stroke-width="2.5" stroke-linejoin="round">
-          <path d="M34 8 C23 10 21 24 27 34 C30 29 35 25 37 18 Q39 11 34 8Z"/>
-          <path d="M76 8 C87 10 89 24 83 34 C80 29 75 25 73 18 Q71 11 76 8Z"/>
-        </g>
       </svg>`:'<span class="costume-badge"></span><span class="costume-belt"></span>'}</div>
       ${costume==='dress'?`<svg class="party-hair-bow" viewBox="0 0 36 24" aria-hidden="true"><path d="M3 3 Q11 1 18 9 Q25 1 33 3 L33 21 Q25 23 18 15 Q11 23 3 21Z" fill="#a56de2" stroke="#2a1a11" stroke-width="2.5" stroke-linejoin="round"/><ellipse cx="18" cy="12" rx="4" ry="6" fill="#ffd45a" stroke="#2a1a11" stroke-width="2"/></svg>`:''}
-      ${costume==='dress'?'':'<div class="wing wing-left"></div><div class="wing wing-right"></div>'}
+      <div class="wing wing-left"></div>
+      <div class="wing wing-right"></div>
       <div class="tail"></div>
       <div class="legs"><span></span><span></span></div>
     </div>

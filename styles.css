@@ -1030,6 +1030,9 @@ body.level-up .topbar{
   inset:0; background:none;border:0;border-radius:0;
 }
 .party-dress{position:absolute;top:0;left:50%;transform:translateX(-50%);width:110px;height:90px;overflow:visible}
+.chicken-avatar[data-costume="dress"] .wing{top:12px;width:14px;height:38px;z-index:3;border-radius:50%}
+.chicken-avatar[data-costume="dress"] .wing-left{left:-14px}
+.chicken-avatar[data-costume="dress"] .wing-right{left:auto;right:-14px}
 .chicken-avatar[data-costume="dress"] .chef-hat{display:none}
 /* Head and bow share the same body anchor, including scaled previews. */
 .party-hair-bow{position:absolute;top:-52px;left:calc(50% + 8px);width:30px;height:22px;
