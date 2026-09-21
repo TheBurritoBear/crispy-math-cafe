@@ -8,7 +8,7 @@
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-title" content="Crispy Math Café" />
 <title>Crispy Math Café</title>
-<link rel="stylesheet" href="styles.css?v=20260921-rubber-ducks" />
+<link rel="stylesheet" href="styles.css?v=20260921-rush-keypad" />
 <link rel="stylesheet" href="town.css?v=20260921-shop-name" />
 </head>
 <body>
@@ -195,9 +195,25 @@
 <div><span>TIME</span><strong id="rushTime">60s</strong></div>
 <div><span>SCORE</span><strong id="rushScore">0</strong></div>
 </div>
+<div class="rush-play">
 <div class="mode-question">
 <div class="equation" id="rushEquation">Press start</div>
-<input id="rushInput" inputmode="numeric" placeholder="Answer" disabled />
+<input id="rushInput" readonly inputmode="none" aria-label="Rush answer" placeholder="Answer" disabled />
+</div>
+<fieldset id="rushNumberPad" class="number-pad" aria-label="Rush number pad" disabled>
+<button type="button" data-rush-key="1">1</button>
+<button type="button" data-rush-key="2">2</button>
+<button type="button" data-rush-key="3">3</button>
+<button type="button" data-rush-key="4">4</button>
+<button type="button" data-rush-key="5">5</button>
+<button type="button" data-rush-key="6">6</button>
+<button type="button" data-rush-key="7">7</button>
+<button type="button" data-rush-key="8">8</button>
+<button type="button" data-rush-key="9">9</button>
+<button type="button" class="pad-action" data-rush-key="clear">Clear</button>
+<button type="button" data-rush-key="0">0</button>
+<button type="button" class="pad-action" data-rush-key="delete" aria-label="Delete last digit">⌫</button>
+</fieldset>
 </div>
 <div class="actions">
 <button id="rushStart" class="primary">Start rush</button>
@@ -356,6 +372,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="town.js?v=20260921-wardrobe-ducks"></script>
-<script src="app.js?v=20260921-shop-name"></script>
+<script src="app.js?v=20260921-rush-keypad"></script>
 </body>
 </html>

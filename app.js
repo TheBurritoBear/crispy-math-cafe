@@ -346,6 +346,13 @@ function appendAnswer(n){
 }
 function clearAnswer(){ $('answerInput').value=''; }
 function deleteAnswer(){ $('answerInput').value=$('answerInput').value.slice(0,-1); }
+function editRushAnswer(key){
+  if(!rush.active)return;
+  const input=$('rushInput');
+  if(key==='clear')input.value='';
+  else if(key==='delete')input.value=input.value.slice(0,-1);
+  else if(/^[0-9]$/.test(key)&&input.value.length<5)input.value+=key;
+}
 
 function resetRush(){
   clearInterval(rush.timer);
@@ -369,7 +376,6 @@ function startRush(){
   $('rushMsg').textContent='';
   rushNext();
   renderRush();
-  $('rushInput').focus();
   rush.timer=setInterval(async()=>{
     rush.time--;
     renderRush();
@@ -380,6 +386,7 @@ async function finishRush(reason='time'){
   clearInterval(rush.timer);
   if(!rush.active)return;
   rush.active=false;
+  $('rushNumberPad').disabled=true;
   const round=rush;
   $('rushInput').disabled=true;
   $('rushSubmit').disabled=true;
@@ -409,13 +416,15 @@ function rushNext(){
 }
 function rushAnswer(){
   if(!rush.active)return;
+  if(!$('rushInput').value.trim())return;
   const val=Number($('rushInput').value);
   if(!Number.isFinite(val))return;
   if(val===rush.q.answer){rush.correct++;rush.score++;}
   else{rush.incorrect++;rush.score--;}
-  renderRush();rushNext();$('rushInput').focus();
+  renderRush();rushNext();
 }
 function renderRush(){
+  $('rushNumberPad').disabled=!rush.active;
   $('rushTime').textContent=rush.time+'s';
   $('rushScore').textContent=rush.score;
 }
@@ -755,7 +764,7 @@ $('hintBtn').onclick=useHint;
 $('rushStart').onclick=startRush;
 $('rushSubmit').onclick=rushAnswer;
 $('rushQuit').onclick=()=>finishRush('quit');
-$('rushInput').addEventListener('keydown',e=>{if(e.key==='Enter')rushAnswer();});
+document.querySelectorAll('[data-rush-key]').forEach(b=>b.onclick=()=>editRushAnswer(b.dataset.rushKey));
 $('duckStart').onclick=startDuck;
 $('duckQuit').onclick=()=>finishDuck('quit');
 $('duckOverBtn').onclick=startDuck;
@@ -774,6 +783,13 @@ $('logoutBtn').onclick=logout;
 // hardware keyboard (iPad Smart Keyboard, laptops). The answer box is
 // read-only so iPad never slides the software keyboard over the game.
 document.addEventListener('keydown',e=>{
+  if(rush.active&&!$('rush').classList.contains('hidden')){
+    if(e.target.matches('input:not([readonly]),textarea,[contenteditable="true"]'))return;
+    if(/^[0-9]$/.test(e.key)){editRushAnswer(e.key);e.preventDefault();}
+    else if(e.key==='Backspace'){editRushAnswer('delete');e.preventDefault();}
+    else if(e.key==='Enter'){rushAnswer();e.preventDefault();}
+    return;
+  }
   if(!currentQ)return;
   if(e.key>='0'&&e.key<='9'){appendAnswer(e.key);}
   else if(e.key==='Backspace'){deleteAnswer();e.preventDefault();}

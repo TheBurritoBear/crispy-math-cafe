@@ -176,6 +176,11 @@ button:disabled{opacity:.45;cursor:not-allowed;filter:grayscale(.2)}
 }
 .feedback.good,.feedback.bad{padding:9px;border:2px solid currentColor;background:#fff}
 .mode-card{padding:24px}
+.rush-play{display:grid;gap:16px;align-items:center}
+#rushNumberPad{border:0;padding:0;margin:16px auto 0;width:min(100%,320px);min-width:0}
+#rushNumberPad button{min-height:44px}
+#rushInput{text-align:center;font-size:1.5rem;font-weight:900}
+@media(min-width:700px){.rush-play{grid-template-columns:minmax(0,1fr) minmax(0,320px)}}
 .mode-header{display:flex;justify-content:space-between;gap:18px;align-items:flex-start}
 .mode-header p{max-width:700px;margin:.3rem 0;color:var(--muted);font-weight:700}
 .mode-badge{
