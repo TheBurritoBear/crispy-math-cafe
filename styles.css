@@ -954,3 +954,86 @@ body.level-up .topbar{
   }
   .duck-answer{font-size:1.08rem}
 }
+
+/* Mix-and-match wardrobe: feather colors never tint clothing or accessories. */
+.chicken-avatar{--feather:#fff8ea;--feather-wing:#f5dfba}
+.chicken-avatar[data-style="original"]{--feather:#fff0cf}
+.chicken-avatar[data-style="soy_garlic"]{--feather:#eed1a0}
+.chicken-avatar[data-style="honey_butter"]{--feather:#ffd76a}
+.chicken-avatar[data-style="sweet_chili"]{--feather:#f27a5f}
+.chicken-avatar[data-style="sesame"]{--feather:#efe1c8}
+.chicken-avatar[data-style="gochujang"]{--feather:#d84d38}
+.chicken-avatar[data-style="golden_garlic"]{--feather:#ffc94d}
+.chicken-avatar[data-style="firecracker"]{--feather:#ef5f41}
+.chicken-avatar[data-color="bright_green"]{--feather:#79ee36;--feather-wing:#53c924}
+.chicken-avatar[data-color="pink"]{--feather:#ff91c4;--feather-wing:#ee69a8}
+.chicken-avatar[data-color="blue"]{--feather:#66c9ff;--feather-wing:#37a6ed}
+.chicken-avatar[data-costume="none"] .chicken-body{background:var(--feather)}
+.chicken-avatar[data-color] .wing{background:var(--feather-wing)}
+.chicken-avatar[data-color] .tail::before,
+.chicken-avatar[data-color] .tail::after{background:var(--feather)}
+.chicken-avatar[data-style="halloween_chicken"] .chicken-body::before{background:var(--feather)}
+.chicken-avatar[data-style="halloween_chicken"] .wing{background:var(--feather-wing)}
+.costume-suit{display:none}
+.shop-category{margin-top:28px}
+.shop-category h3{font-size:1.5rem;margin:0 0 4px}
+.shop-category>p{margin:0;font-size:.95rem}
+.shop-category .shop-grid{margin-top:14px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+.shopItem.is-equipped{border-color:var(--green);background:#f0f8e8}
+.shop-category .chicken-shop-preview{min-height:170px}
+
+/* Each outfit has a dressed torso with a separate head above the neckline. */
+.chicken-avatar:is([data-costume="dress"],[data-costume="cowboy"],[data-costume="firefighter"]){width:118px;flex-basis:118px;height:190px;padding-bottom:32px}
+.chicken-avatar:is([data-costume="dress"],[data-costume="cowboy"],[data-costume="firefighter"]) .chicken-body{
+  width:88px;height:84px;transform:none;border-radius:28% 28% 36% 36%;
+  background:#8d5937;box-shadow:3px 4px 0 var(--ink);
+}
+.chicken-avatar:is([data-costume="dress"],[data-costume="cowboy"],[data-costume="firefighter"]) .chicken-body::before{
+  content:"";position:absolute;width:60px;height:60px;top:-47px;left:50%;
+  transform:translateX(-50%);border:3px solid var(--ink);border-radius:48% 48% 43% 43%;
+  background:var(--feather);z-index:3;
+}
+.chicken-avatar:is([data-costume="dress"],[data-costume="cowboy"],[data-costume="firefighter"]) .eye{top:-27px;z-index:5}
+.chicken-avatar:is([data-costume="dress"],[data-costume="cowboy"],[data-costume="firefighter"]) .eye-left{left:26px}
+.chicken-avatar:is([data-costume="dress"],[data-costume="cowboy"],[data-costume="firefighter"]) .eye-right{right:26px}
+.chicken-avatar:is([data-costume="dress"],[data-costume="cowboy"],[data-costume="firefighter"]) .beak{top:-16px;z-index:5}
+.chicken-avatar:is([data-costume="dress"],[data-costume="cowboy"],[data-costume="firefighter"]) .wattle{top:-4px;height:11px;z-index:5}
+.chicken-avatar:is([data-costume="dress"],[data-costume="cowboy"],[data-costume="firefighter"]) .comb{top:-52px;left:28px;z-index:4}
+.chicken-avatar:is([data-costume="dress"],[data-costume="cowboy"],[data-costume="firefighter"]) .wing{top:18px;left:-21px;z-index:1;transform:rotate(30deg)}
+.chicken-avatar:is([data-costume="dress"],[data-costume="cowboy"],[data-costume="firefighter"]) .wing-right{left:auto;right:-21px;transform:rotate(-30deg)}
+.chicken-avatar:is([data-costume="dress"],[data-costume="cowboy"],[data-costume="firefighter"]) .tail{top:25px}
+.chicken-avatar:is([data-costume="dress"],[data-costume="cowboy"],[data-costume="firefighter"]) .costume-suit{display:block;position:absolute;inset:0;z-index:2;overflow:visible}
+.chicken-avatar:is([data-costume="dress"],[data-costume="cowboy"],[data-costume="firefighter"]) .chef-hat span{display:none}
+
+/* Purple party dress, flared skirt, gold sash and matching hair bow. */
+.chicken-avatar[data-costume="dress"] .chicken-body{background:transparent;border-color:transparent;box-shadow:none}
+.chicken-avatar[data-costume="dress"] .costume-suit{
+  inset:-2px -8px -2px;
+  background:radial-gradient(circle,#fff7da 1.7px,transparent 2px) 0 0/14px 14px,#a56de2;
+  border:3px solid var(--ink);border-radius:22% 22% 12% 12%;
+  clip-path:polygon(26% 0,74% 0,80% 18%,72% 40%,100% 96%,82% 100%,18% 100%,0 96%,28% 40%,20% 18%);
+}
+.chicken-avatar[data-costume="dress"] .costume-belt{position:absolute;left:18%;right:18%;top:31px;height:9px;background:#ffd45a;border-block:2px solid var(--ink)}
+.chicken-avatar[data-costume="dress"] .costume-badge{position:absolute;left:39%;top:27px;width:22px;height:17px;background:#f6bff0;clip-path:polygon(0 0,50% 35%,100% 0,100% 100%,50% 65%,0 100%);z-index:1}
+.chicken-avatar[data-costume="dress"] .chef-hat{top:22px;left:67%;width:34px;height:21px;transform:rotate(17deg);background:#a56de2;clip-path:polygon(0 0,50% 30%,100% 0,100% 100%,50% 70%,0 100%);z-index:6}
+.chicken-avatar[data-costume="dress"] .chef-hat::after{inset:5px 13px;height:auto;background:#ffd45a;border:0;border-radius:50%}
+
+/* Cowboy: suede vest, red bandana, sheriff star and broad-brimmed hat. */
+.chicken-avatar[data-costume="cowboy"] .chicken-body{background:linear-gradient(90deg,#98623c 0 27%,#ffebc6 28% 72%,#98623c 73%)}
+.chicken-avatar[data-costume="cowboy"] .costume-suit::before{content:"";position:absolute;top:7px;left:19px;right:19px;height:20px;background:#d93a2f;clip-path:polygon(0 0,100% 0,50% 100%)}
+.chicken-avatar[data-costume="cowboy"] .costume-badge{position:absolute;right:8px;top:28px;width:19px;height:19px;background:#ffd04b;clip-path:polygon(50% 0,61% 33%,98% 35%,69% 57%,80% 93%,50% 71%,20% 93%,31% 57%,2% 35%,39% 33%)}
+.chicken-avatar[data-costume="cowboy"] .costume-belt{position:absolute;left:0;right:0;bottom:12px;height:10px;background:#422919;border-block:2px solid var(--ink)}
+.chicken-avatar[data-costume="cowboy"] .costume-belt::after{content:"";position:absolute;left:34px;top:-3px;width:15px;height:13px;border:3px solid #ffd04b;border-radius:3px}
+.chicken-avatar[data-costume="cowboy"] .chef-hat{top:4px;width:51px;height:28px;background:#ac764b;border:3px solid var(--ink);border-radius:35% 35% 10% 10%;transform:translateX(-50%) rotate(-8deg);z-index:6}
+.chicken-avatar[data-costume="cowboy"] .chef-hat::after{left:-18px;right:-18px;bottom:-8px;height:13px;background:#c99560;border:3px solid var(--ink);border-radius:50%}
+.chicken-avatar[data-costume="cowboy"] .chef-hat::before{content:"";position:absolute;left:0;right:0;bottom:3px;height:6px;background:#58361d}
+
+/* Firefighter: red turnout coat and helmet with fixed yellow safety stripes. */
+.chicken-avatar[data-costume="firefighter"] .chicken-body{background:#d94132}
+.chicken-avatar[data-costume="firefighter"] .costume-suit{background:linear-gradient(90deg,transparent 46%,#76271f 47% 52%,transparent 53%);border-radius:inherit}
+.chicken-avatar[data-costume="firefighter"] .costume-belt{position:absolute;left:0;right:0;bottom:13px;height:11px;background:#ffe75d;border-block:2px solid var(--ink)}
+.chicken-avatar[data-costume="firefighter"] .costume-badge{position:absolute;right:10px;top:22px;width:18px;height:22px;background:#ffe75d;border:2px solid var(--ink);border-radius:3px 3px 50% 50%}
+.chicken-avatar[data-costume="firefighter"] .costume-suit::before{content:"";position:absolute;left:11px;top:23px;width:19px;height:15px;border:2px solid #76271f;border-top:4px solid #ffe75d;border-radius:2px}
+.chicken-avatar[data-costume="firefighter"] .chef-hat{top:3px;width:65px;height:32px;background:#e54636;border:3px solid var(--ink);border-radius:50% 50% 10% 10%;z-index:6}
+.chicken-avatar[data-costume="firefighter"] .chef-hat::after{left:-10px;right:-10px;bottom:-7px;height:10px;background:#e54636;border:3px solid var(--ink);border-radius:50%}
+.chicken-avatar[data-costume="firefighter"] .chef-hat::before{content:"";position:absolute;left:23px;top:4px;width:14px;height:18px;background:#ffe75d;border:2px solid var(--ink);border-radius:3px 3px 50% 50%;z-index:2}

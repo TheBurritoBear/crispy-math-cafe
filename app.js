@@ -22,6 +22,24 @@ const sauces=[
   {id:'firecracker',name:'Firecracker',level:9,icon:'💥'}
 ];
 
+const avatarColors={natural:'Natural',bright_green:'Bright green',pink:'Pink',blue:'Blue'};
+const avatarCostumes={none:'No costume',dress:'Party dress',cowboy:'Cowboy',firefighter:'Firefighter',halloween_chicken:'Pumpkin costume'};
+let shopActionBusy=false;
+let shopCatalog=[];
+function appearanceFor(p=player){
+  const extra=p?.extra_state||{};
+  const legacy=p?.active_chicken==='halloween_chicken'?'halloween_chicken':'none';
+  return {
+    color:Object.hasOwn(avatarColors,extra.avatar_color)?extra.avatar_color:'natural',
+    costume:Object.hasOwn(avatarCostumes,extra.avatar_costume)?extra.avatar_costume:legacy,
+    sauce:sauces.some(s=>s.id===p?.active_chicken)?p.active_chicken:'plain'
+  };
+}
+function appearancePatch(category,id){
+  const current=appearanceFor();
+  return {extra_state:{...(player.extra_state||{}),avatar_color:category==='color'?id:current.color,avatar_costume:category==='costume'?id:current.costume}};
+}
+
 function maxFactorForLevel(level){
   if(level<=1) return 5;
   if(level===2) return 9;
@@ -149,8 +167,9 @@ function updateUI(){
   $('shopCopy').textContent=player.current_level<=3
     ?`Let’s fill ${goal} correct orders, at your own pace.`
     :`Level ${player.current_level} takes ${goal} correct orders. Keep the kitchen moving!`;
-  $('chickenAvatar').dataset.style=player.active_chicken||'plain';
-  $('chickenStyleLabel').textContent='Serving '+displayStyleName(player.active_chicken).toLowerCase();
+  const look=appearanceFor();
+  $('chickenAvatar').outerHTML=chickenPreviewMarkup(look.sauce,false,look.color,look.costume,true);
+  $('chickenStyleLabel').textContent=avatarColors[look.color]+' chicken'+(look.costume==='none'?'':' · '+avatarCostumes[look.costume]);
   const next=sauces.find(s=>s.level>player.current_level);
   $('nextUnlockText').textContent=next
     ?`Complete level ${next.level-1}: unlock ${next.name}`
@@ -176,7 +195,7 @@ function renderSauces(){
 async function equipStyle(id){
   if(sauces.find(s=>s.id===id)?.level>player.current_level)return;
   try{
-    await savePlayer({active_chicken:id});
+    await savePlayer({active_chicken:id,...appearancePatch('color',appearanceFor().color)});
   }catch(e){alert(e.message);}
 }
 
@@ -397,8 +416,9 @@ function duckAnswerChoices(answer,row){
   while(values.size<3) values.add(answer+values.size+1);
   return shuffled([...values]);
 }
-function chickenPreviewMarkup(style='plain',mini=false){
-  return `<div class="chicken-avatar ${mini?'mini-chicken':''}" data-style="${escapeHtml(style||'plain')}" aria-hidden="true">
+function chickenPreviewMarkup(style='plain',mini=false,color='natural',costume='none',main=false){
+  const renderedStyle=costume==='halloween_chicken'?'halloween_chicken':style;
+  return `<div ${main?'id="chickenAvatar" role="img" aria-label="'+escapeHtml(avatarColors[color]+' chicken, '+avatarCostumes[costume])+'"':'aria-hidden="true"'} class="chicken-avatar ${mini?'mini-chicken':''}" data-style="${escapeHtml(renderedStyle)}" data-color="${escapeHtml(color)}" data-costume="${escapeHtml(costume)}">
     <div class="chef-hat"><span></span><span></span><span></span></div>
     <div class="chicken-body">
       <div class="comb"></div>
@@ -412,6 +432,7 @@ function chickenPreviewMarkup(style='plain',mini=false){
         <span class="pumpkin-nose"></span>
         <span class="pumpkin-mouth"></span>
       </div>
+      <div class="costume-suit"><span class="costume-badge"></span><span class="costume-belt"></span></div>
       <div class="wing wing-left"></div>
       <div class="wing wing-right"></div>
       <div class="tail"></div>
@@ -535,42 +556,47 @@ function renderDuck(){
 async function renderShop(){
   $('shopCoinCount').textContent=player.coins;
   try{
-    const items=await rpc('get_shop_items');
-    $('shopItems').innerHTML=items.map(i=>{
-      const owned=player.purchased_items.includes(i.id);
-      const locked=player.current_level<i.min_level;
-      const equipped=player.active_chicken===i.id;
-      let button='';
-      if(owned){
-        button=`<button data-equip="${i.id}" class="${equipped?'secondary':''}">${equipped?'Equipped':'Equip'}</button>`;
-      }else{
-        const label=locked?`Unlock after Level ${i.min_level-1}`:`${i.cost} coins`;
-        button=`<button data-buy="${i.id}" ${locked?'disabled':''}>${label}</button>`;
-      }
-      return `<div class="shopItem">
-        <div class="preview chicken-shop-preview">${chickenPreviewMarkup(i.id,true)}</div>
-        <div>
-          <strong>${i.display_name}</strong>
-          <div class="shop-meta">${i.description||''}</div>
-        </div>
-        ${button}
-      </div>`;
-    }).join('')||'<p>No shop items yet.</p>';
-    document.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>buyItem(b.dataset.buy));
-    document.querySelectorAll('[data-equip]').forEach(b=>b.onclick=()=>equipPurchased(b.dataset.equip));
-  }catch(e){$('shopItems').textContent='Shop unavailable.';}
+    shopCatalog=await rpc('get_shop_items');
+    const look=appearanceFor();
+    $('shopItems').innerHTML=[['color','Colors','100 coins each · only your chicken changes color'],['costume','Costumes','200 coins each · keep your selected chicken color']].map(([category,title,subtitle])=>{
+      const items=shopCatalog.filter(i=>i.item_type===category);
+      const defaultId=category==='color'?'natural':'none';
+      const defaultName=category==='color'?'Natural feathers':'No costume';
+      const options=[{id:defaultId,display_name:defaultName,description:category==='color'?'Use your unlocked sauce color.':'Back to your chef hat.',free:true},...items];
+      return `<section class="shop-category"><h3>${title}</h3><p class="muted">${subtitle}</p><div class="shop-grid">${options.map(i=>{
+        const owned=i.free||player.purchased_items.includes(i.id);
+        const locked=!i.free&&player.current_level<i.min_level;
+        const equipped=look[category]===i.id;
+        const previewColor=category==='color'?i.id:look.color;
+        const previewCostume=category==='costume'?i.id:look.costume;
+        const label=equipped?'Equipped':owned?'Equip':locked?`Unlock after Level ${i.min_level-1}`:`Buy · ${i.cost} coins`;
+        const disabled=shopActionBusy||equipped||locked||(!owned&&player.coins<i.cost);
+        return `<div class="shopItem ${equipped?'is-equipped':''}">
+          <div class="preview chicken-shop-preview">${chickenPreviewMarkup(look.sauce,true,previewColor,previewCostume)}</div>
+          <div><strong>${escapeHtml(i.display_name)}</strong><div class="shop-meta">${escapeHtml(i.description||'')}</div></div>
+          <button data-avatar-item="${escapeHtml(i.id)}" data-category="${category}" ${disabled?'disabled':''} aria-pressed="${equipped}">${label}</button>
+        </div>`;
+      }).join('')}</div></section>`;
+    }).join('');
+    document.querySelectorAll('[data-avatar-item]').forEach(b=>b.onclick=()=>selectAvatarItem(b.dataset.category,b.dataset.avatarItem));
+  }catch(e){$('shopItems').textContent='Shop unavailable. Open the shop again to retry.';}
 }
-async function buyItem(id){
+async function selectAvatarItem(category,id){
+  if(shopActionBusy||!['color','costume'].includes(category))return;
+  const free=(category==='color'&&id==='natural')||(category==='costume'&&id==='none');
+  const item=shopCatalog.find(i=>i.id===id&&i.item_type===category);
+  if(!free&&!item)return;
+  if(!free&&(!player.purchased_items.includes(id))&&(player.current_level<item.min_level||player.coins<item.cost))return;
+  shopActionBusy=true;
+  document.querySelectorAll('[data-avatar-item]').forEach(b=>b.disabled=true);
   try{
-    player=await rpc('purchase_item',{p_session_token:sessionToken,p_item_id:id});
-    await savePlayer({active_chicken:id});
-    renderShop();
+    if(!free&&!player.purchased_items.includes(id)){
+      player=await rpc('purchase_item',{p_session_token:sessionToken,p_item_id:id});
+      updateUI();
+    }
+    await savePlayer(appearancePatch(category,id));
   }catch(e){alert(e.message);}
-}
-async function equipPurchased(id){
-  if(!player.purchased_items.includes(id))return;
-  try{await savePlayer({active_chicken:id});renderShop();}
-  catch(e){alert(e.message);}
+  finally{shopActionBusy=false;await renderShop();}
 }
 
 async function loadBoard(mode='rush'){
