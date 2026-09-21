@@ -128,6 +128,8 @@ function updateUI(){
   $('hintLabel').textContent='Hints: '+player.hints;
   $('hintCountInline').textContent='('+player.hints+' available)';
   $('storeTitle').textContent=player.store_name||'My Chicken Shop';
+  $('storeNameEditor').classList.toggle('hidden',player.current_level<2);
+  $('storeNameInput').value=player.store_name||'';
   $('progressText').textContent=`${player.level_correct} / ${goal} correct to complete this level`;
   $('progressFill').style.width=Math.min(100,(player.level_correct/goal)*100)+'%';
   $('ordersFilled').textContent=player.total_orders;
@@ -210,10 +212,12 @@ async function serveOrder(){
     if(lc>=levelGoal(lvl)){lvl++;lc=0;levelUp=true;}
     $('feedback').textContent=levelUp?'✓ Correct! Level up! 🎉':'✓ Correct!';
     $('feedback').className='feedback good';
+    flashFeedback(levelUp);
   }else{
     streak=0;
     $('feedback').textContent=`Not quite · ${currentQ.a} × ${currentQ.b} = ${currentQ.answer}`;
     $('feedback').className='feedback bad';
+    flashFeedback(false);
   }
   try{
     await savePlayer({
@@ -243,6 +247,25 @@ async function useHint(){
   $('feedback').textContent=`Hint: count ${currentQ.a} groups of ${currentQ.b}. Try skip-counting by ${currentQ.b}s.`;
   $('feedback').className='feedback good';
   await savePlayer({hints:player.hints-1});
+}
+async function saveStoreName(){
+  if(player.current_level<2)return;
+  const name=$('storeNameInput').value.trim();
+  if(!name)return;
+  try{
+    await savePlayer({store_name:name});
+    $('storeNameInput').blur();
+  }catch(e){alert(e.message);}
+}
+function flashFeedback(levelUp=false){
+  const el=$('feedback');
+  el.classList.remove('pop');
+  void el.offsetWidth;
+  el.classList.add('pop');
+  if(levelUp){
+    document.body.classList.add('level-up');
+    setTimeout(()=>document.body.classList.remove('level-up'),750);
+  }
 }
 function skipOrder(){nextOrder();}
 function appendAnswer(n){
@@ -451,6 +474,8 @@ document.querySelectorAll('[data-number]').forEach(b=>b.onclick=()=>appendAnswer
 $('clearAnswer').onclick=clearAnswer;
 $('deleteAnswer').onclick=deleteAnswer;
 $('skipBtn').onclick=skipOrder;
+$('saveStoreName').onclick=saveStoreName;
+$('storeNameInput').addEventListener('keydown',e=>{if(e.key==='Enter')saveStoreName();});
 $('createBtn').onclick=createPlayer;
 $('loginBtn').onclick=login;
 $('serveBtn').onclick=serveOrder;
