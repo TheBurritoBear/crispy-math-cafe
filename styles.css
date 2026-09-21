@@ -1030,15 +1030,9 @@ body.level-up .topbar{
   inset:0; background:none;border:0;border-radius:0;
 }
 .party-dress{position:absolute;top:0;left:50%;transform:translateX(-50%);width:110px;height:90px;overflow:visible}
-.chicken-avatar[data-costume="dress"] .wing{
-  top:8px;width:18px;height:30px;z-index:3;transform-origin:50% 15%;
-}
-.chicken-avatar[data-costume="dress"] .wing-left{
-  left:-10px;right:auto;transform:rotate(12deg);border-radius:55% 45% 65% 35%;
-}
-.chicken-avatar[data-costume="dress"] .wing-right{
-  left:auto;right:-10px;transform:rotate(-12deg);border-radius:45% 55% 35% 65%;
-}
+.chicken-avatar[data-costume="dress"] .wing{top:12px;width:20px;height:29px;z-index:3}
+.chicken-avatar[data-costume="dress"] .wing-left{left:-17px}
+.chicken-avatar[data-costume="dress"] .wing-right{right:-17px}
 .chicken-avatar[data-costume="dress"] .chef-hat{display:none}
 /* Head and bow share the same body anchor, including scaled previews. */
 .party-hair-bow{position:absolute;top:-52px;left:calc(50% + 8px);width:30px;height:22px;
