@@ -2,119 +2,248 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#8f1d14" />
   <title>Crispy Math Café</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <div class="page-pattern" aria-hidden="true"></div>
+
   <main class="shell">
-    <header class="hero">
-      <div>
-        <div class="eyebrow">KOREAN FRIED CHICKEN · 치킨</div>
-        <h1>🍗 Crispy Math Café</h1>
-        <p>Multiply. Pack. Serve. Level up.</p>
+    <header class="topbar">
+      <div class="brand-lockup">
+        <div class="logo-mark">🍗</div>
+        <div>
+          <div class="eyebrow">KOREAN FRIED CHICKEN · 치킨</div>
+          <h1>Crispy Math Café</h1>
+          <p class="tagline">Multiply. Pack. Serve. Level up.</p>
+        </div>
       </div>
-      <div class="stats">
-        <span id="levelBadge">Level 1</span>
-        <span id="coinBadge">0 coins</span>
+      <div class="top-stats">
+        <span class="pill cloud-pill">☁ Cloud save</span>
+        <span class="pill" id="coinBadge">0 coins</span>
+        <span class="pill level-pill" id="levelBadge">Level 1</span>
       </div>
     </header>
 
-    <section id="authCard" class="card">
-      <h2>Player login</h2>
-      <p>Use the same name + save code on any device to restore progress.</p>
-      <div class="grid2">
-        <input id="playerName" maxlength="24" placeholder="Player name" autocomplete="username" />
-        <input id="saveCode" maxlength="32" placeholder="Private save code" autocomplete="current-password" />
+    <section id="authCard" class="auth-wrap">
+      <div class="auth-poster">
+        <div class="poster-kicker">WELCOME TO YOUR</div>
+        <div class="poster-title">CHICKEN<br>SHOP</div>
+        <div class="poster-chicken">🐔</div>
+        <div class="open-sign">OPEN</div>
+        <p>Serve orders, earn coins, unlock sauces, and build your multiplication streak.</p>
       </div>
-      <div class="actions">
-        <button id="loginBtn">Continue game</button>
-        <button id="createBtn" class="secondary">Create player</button>
+
+      <div class="card auth-card">
+        <div class="section-kicker">PLAYER SAVE</div>
+        <h2>Pick up where you left off</h2>
+        <p class="muted">Use the same player name and private save code on any device.</p>
+        <label>
+          <span>Player name</span>
+          <input id="playerName" maxlength="24" placeholder="Example: James" autocomplete="username" />
+        </label>
+        <label>
+          <span>Private save code</span>
+          <input id="saveCode" type="password" maxlength="32" placeholder="4–32 characters" autocomplete="current-password" />
+        </label>
+        <div class="actions stacked-mobile">
+          <button id="loginBtn" class="primary">Continue game</button>
+          <button id="createBtn" class="secondary">Create new player</button>
+        </div>
+        <p id="authMsg" class="msg" role="status"></p>
+        <p class="tiny-note">No email needed. Your save code is private and is not stored in readable form.</p>
       </div>
-      <p id="authMsg" class="msg"></p>
     </section>
 
     <section id="gameApp" class="hidden">
-      <nav class="tabs">
-        <button data-tab="orders" class="active">Take orders</button>
-        <button data-tab="rush">60-second rush</button>
-        <button data-tab="duck">Duck Dash</button>
-        <button data-tab="shop">Coin shop</button>
-        <button data-tab="leaderboard">Leaderboards</button>
+      <nav class="tabs" aria-label="Game modes">
+        <button data-tab="orders" class="active"><span>🍗</span> Take orders</button>
+        <button data-tab="rush"><span>⚡</span> 60-second rush</button>
+        <button data-tab="duck" id="duckTab"><span>💡</span> Hint game</button>
+        <button data-tab="shop"><span>🛍</span> Coin shop</button>
+        <button data-tab="leaderboard"><span>🏆</span> Leaderboards</button>
       </nav>
 
-      <section id="orders" class="panel card">
-        <div class="split">
-          <div>
-            <h2 id="storeTitle">My Chicken Shop</h2>
-            <p id="progressText">0 / 10 correct to complete this level</p>
-          </div>
-          <div class="chicken">🐔</div>
-        </div>
+      <section id="orders" class="panel">
+        <div class="game-grid">
+          <aside class="side-stack">
+            <section class="card shop-card">
+              <div class="shop-heading">
+                <div>
+                  <div class="section-kicker">YOUR SHOP</div>
+                  <h2 id="storeTitle">My Chicken Shop</h2>
+                </div>
+                <div class="open-sign small">OPEN</div>
+              </div>
 
-        <div class="orderBox">
-          <div class="eyebrow" id="orderCounter">ORDER</div>
-          <h3 id="orderPrompt">Pack the chicken!</h3>
-          <div class="equation" id="equation">2 × 3 = ?</div>
-          <input id="answerInput" inputmode="numeric" placeholder="Answer" />
-          <div class="actions">
-            <button id="serveBtn">Serve order</button>
-            <button id="hintBtn" class="secondary">Use hint</button>
-          </div>
-          <div id="feedback" class="feedback"></div>
+              <div class="chef-stage">
+                <div id="chickenAvatar" class="chicken-avatar" aria-label="Your chicken chef">🐔</div>
+                <div>
+                  <strong>Your chicken chef</strong>
+                  <div id="chickenStyleLabel" class="muted">Serving plain chicken</div>
+                </div>
+              </div>
+
+              <div class="shop-copy" id="shopCopy">Let’s fill ten orders, at your own pace.</div>
+
+              <div class="shop-stats">
+                <div><strong id="ordersFilled">0</strong><span>orders filled</span></div>
+                <div><strong id="streakValue">0</strong><span>in a row</span></div>
+              </div>
+            </section>
+
+            <section class="card progress-card">
+              <div class="section-kicker">LEVEL PROGRESS & SAUCES</div>
+              <div class="progress-title">
+                <strong id="progressText">0 / 10 correct to complete this level</strong>
+              </div>
+              <div class="progress-track" aria-hidden="true"><div id="progressFill"></div></div>
+              <p id="nextUnlockText" class="unlock-copy">Complete level 1: unlock Original</p>
+              <div id="sauceGrid" class="sauce-grid"></div>
+            </section>
+          </aside>
+
+          <section class="card order-card">
+            <div class="order-card-top">
+              <div>
+                <div id="orderCounter" class="section-kicker">ORDER 1 OF 10</div>
+                <div class="no-timer">NO TIMER</div>
+              </div>
+              <div class="ticket-icon">🧾</div>
+            </div>
+
+            <div class="order-content">
+              <h2 id="orderPrompt">Pack the chicken!</h2>
+              <p id="orderStory" class="order-story">2 boxes. 3 pieces in each box.</p>
+              <div class="equation" id="equation">2 × 3 = ?</div>
+              <p id="orderQuestion" class="muted">How many pieces altogether?</p>
+
+              <div class="answer-row">
+                <span class="answer-label">YOUR ANSWER</span>
+                <input id="answerInput" inputmode="numeric" pattern="[0-9]*" aria-label="Answer" placeholder="?" />
+              </div>
+
+              <div id="numberPad" class="number-pad" aria-label="Number pad">
+                <button type="button" data-number="1">1</button>
+                <button type="button" data-number="2">2</button>
+                <button type="button" data-number="3">3</button>
+                <button type="button" data-number="4">4</button>
+                <button type="button" data-number="5">5</button>
+                <button type="button" data-number="6">6</button>
+                <button type="button" data-number="7">7</button>
+                <button type="button" data-number="8">8</button>
+                <button type="button" data-number="9">9</button>
+                <button type="button" class="pad-action" id="clearAnswer">Clear</button>
+                <button type="button" data-number="0">0</button>
+                <button type="button" class="pad-action" id="deleteAnswer">⌫</button>
+              </div>
+
+              <button id="serveBtn" class="serve-button">Serve order <span>→</span></button>
+
+              <div class="order-tools">
+                <button id="hintBtn" class="secondary">💡 Use hint <span id="hintCountInline"></span></button>
+                <button id="skipBtn" class="ghost">Skip this order</button>
+              </div>
+              <p class="tiny-note">Start with 1 free hint. Earn more in the Hint Game.</p>
+              <div id="feedback" class="feedback" role="status"></div>
+            </div>
+          </section>
         </div>
       </section>
 
-      <section id="rush" class="panel card hidden">
-        <h2>60-second rush</h2>
-        <p>+1 correct · −1 incorrect. Difficulty scales with your level.</p>
-        <div class="rushTop">
-          <span id="rushTime">60s</span>
-          <span id="rushScore">Score 0</span>
+      <section id="rush" class="panel card mode-card hidden">
+        <div class="mode-header">
+          <div>
+            <div class="section-kicker">SPEED ROUND</div>
+            <h2>⚡ 60-second rush</h2>
+            <p>Answer as many as you can. +1 correct · −1 incorrect. The math gets harder as your level rises.</p>
+          </div>
+          <div class="mode-badge">60 SEC</div>
         </div>
-        <div class="equation" id="rushEquation">Press start</div>
-        <input id="rushInput" inputmode="numeric" placeholder="Answer" disabled />
+        <div class="rush-scorebar">
+          <div><span>TIME</span><strong id="rushTime">60s</strong></div>
+          <div><span>SCORE</span><strong id="rushScore">0</strong></div>
+        </div>
+        <div class="mode-question">
+          <div class="equation" id="rushEquation">Press start</div>
+          <input id="rushInput" inputmode="numeric" placeholder="Answer" disabled />
+        </div>
         <div class="actions">
-          <button id="rushStart">Start rush</button>
+          <button id="rushStart" class="primary">Start rush</button>
           <button id="rushSubmit" class="secondary" disabled>Submit answer</button>
         </div>
-        <p id="rushMsg" class="msg"></p>
+        <p id="rushMsg" class="msg" role="status"></p>
       </section>
 
-      <section id="duck" class="panel card hidden">
-        <h2>Duck Dash</h2>
-        <p>Answer a short streak of harder questions to earn hints.</p>
-        <div class="equation" id="duckEquation">Press start</div>
-        <input id="duckInput" inputmode="numeric" placeholder="Answer" disabled />
+      <section id="duck" class="panel card mode-card hidden">
+        <div class="mode-header">
+          <div>
+            <div class="section-kicker">EARN EXTRA HINTS</div>
+            <h2>💡 Hint Game: Duck Dash</h2>
+            <p id="duckIntro">Finish Level 1 to unlock this game.</p>
+          </div>
+          <div class="mode-badge hint-badge">HINT +1</div>
+        </div>
+        <div class="rush-scorebar">
+          <div><span>TIME</span><strong id="duckTime">30s</strong></div>
+          <div><span>SCORE</span><strong id="duckScore">0</strong></div>
+          <div><span>GOAL</span><strong id="duckGoal">5</strong></div>
+        </div>
+        <div class="mode-question">
+          <div class="equation" id="duckEquation">Locked</div>
+          <input id="duckInput" inputmode="numeric" placeholder="Answer" disabled />
+        </div>
         <div class="actions">
-          <button id="duckStart">Start Duck Dash</button>
+          <button id="duckStart" class="primary" disabled>Start Hint Game</button>
           <button id="duckSubmit" class="secondary" disabled>Submit answer</button>
         </div>
-        <p id="duckStatus">0 / 5 correct</p>
+        <p id="duckStatus" class="msg" role="status">Complete Level 1 to unlock.</p>
       </section>
 
-      <section id="shop" class="panel card hidden">
-        <h2>Coin shop</h2>
-        <div id="shopItems"></div>
+      <section id="shop" class="panel hidden">
+        <section class="card mode-card">
+          <div class="mode-header">
+            <div>
+              <div class="section-kicker">SPEND YOUR COINS</div>
+              <h2>🛍 Coin shop</h2>
+              <p>Collect special chicken looks. Level requirements still apply.</p>
+            </div>
+            <div class="mode-badge coin-mode"><span id="shopCoinCount">0</span> 🪙</div>
+          </div>
+          <div id="shopItems" class="shop-grid"></div>
+        </section>
       </section>
 
-      <section id="leaderboard" class="panel card hidden">
-        <div class="actions">
-          <button id="rushBoardBtn">Rush</button>
-          <button id="duckBoardBtn" class="secondary">Duck Dash</button>
-        </div>
-        <table>
-          <thead><tr><th>#</th><th>Name</th><th>Level</th><th>Score</th></tr></thead>
-          <tbody id="boardBody"></tbody>
-        </table>
+      <section id="leaderboard" class="panel hidden">
+        <section class="card mode-card">
+          <div class="mode-header">
+            <div>
+              <div class="section-kicker">FAMILY & FRIENDS</div>
+              <h2>🏆 Leaderboards</h2>
+              <p>Higher unlocked levels rank first because the questions get harder, then score breaks the tie.</p>
+            </div>
+          </div>
+          <div class="board-toggle">
+            <button id="rushBoardBtn" class="active">⚡ Rush</button>
+            <button id="duckBoardBtn" class="secondary">💡 Hint Game</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Player</th><th>Level</th><th>Score</th><th>Correct</th></tr></thead>
+              <tbody id="boardBody"></tbody>
+            </table>
+          </div>
+        </section>
       </section>
 
-      <section class="card accountBar">
+      <section class="account-bar">
         <div>
           <strong id="playerLabel"></strong>
           <span id="hintLabel"></span>
         </div>
-        <button id="logoutBtn" class="secondary">Log out</button>
+        <button id="logoutBtn" class="ghost">Log out</button>
       </section>
     </section>
   </main>
