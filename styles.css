@@ -780,3 +780,164 @@ body.level-up .topbar{
   .duck-answer-row{grid-template-columns:1fr}
   .duck-answer-row button{width:100%}
 }
+
+
+/* iPad Duck Dash + pumpkin costume pass */
+.duck-lane{
+  grid-template-columns:154px minmax(0,1fr);
+  min-height:118px;
+}
+.duck-lane-playfield{min-height:118px}
+.duck-lane-label{gap:5px}
+.lane-question{
+  display:block;
+  width:100%;
+  margin-top:4px;
+  padding:7px 5px;
+  border:2px solid var(--ink);
+  border-radius:10px;
+  background:#fff;
+  color:var(--ink);
+  font-size:1.05rem;
+  line-height:1;
+  font-variant-numeric:tabular-nums;
+}
+.duck-target{
+  width:122px;
+  min-height:76px;
+  grid-template-columns:auto 1fr auto;
+}
+.duck-answer{
+  grid-area:problem;
+  font-size:1.35rem;
+  font-weight:1000;
+  min-width:34px;
+  text-align:center;
+  font-variant-numeric:tabular-nums;
+}
+.duck-target.hit{
+  background:#83e09a;
+  outline:5px solid #e7ffec;
+}
+.duck-target.miss{
+  background:#ff9c86;
+  outline:5px solid #ffe0d9;
+}
+.duck-target.game-over{
+  animation-play-state:paused!important;
+  opacity:.72;
+}
+.duck-answer-panel.compact{
+  padding:12px 15px;
+}
+.duck-answer-panel.compact .duck-equation{
+  margin-bottom:4px;
+}
+.duck-help{
+  text-align:center;
+  font-size:.84rem;
+}
+.pumpkin-suit{
+  display:none;
+  position:absolute;
+  left:50%;
+  top:48px;
+  transform:translateX(-50%);
+  width:78px;
+  height:58px;
+  z-index:2;
+  border:3px solid var(--ink);
+  border-radius:48% 48% 45% 45%;
+  background:
+    radial-gradient(ellipse at 25% 50%,rgba(255,196,82,.28) 0 28%,transparent 30%),
+    radial-gradient(ellipse at 75% 50%,rgba(120,54,0,.12) 0 28%,transparent 30%),
+    linear-gradient(90deg,#e87918 0 16%,#f69a22 16% 33%,#e87918 33% 50%,#f69a22 50% 67%,#e87918 67% 84%,#f69a22 84% 100%);
+  box-shadow:inset 0 -5px 0 rgba(109,49,0,.14);
+}
+.pumpkin-suit:before{
+  content:"";
+  position:absolute;
+  top:-12px;
+  left:50%;
+  width:10px;
+  height:15px;
+  transform:translateX(-50%) rotate(5deg);
+  background:#3c7a35;
+  border:2px solid var(--ink);
+  border-radius:4px;
+}
+.pumpkin-eye,.pumpkin-nose,.pumpkin-mouth{
+  position:absolute;
+  display:block;
+  background:#2b1b17;
+  z-index:3;
+}
+.pumpkin-eye{
+  top:16px;
+  width:13px;
+  height:11px;
+  clip-path:polygon(50% 0,100% 100%,0 100%);
+}
+.pumpkin-eye-left{left:17px}
+.pumpkin-eye-right{right:17px}
+.pumpkin-nose{
+  top:29px;
+  left:50%;
+  transform:translateX(-50%);
+  width:8px;
+  height:8px;
+  clip-path:polygon(50% 0,100% 100%,0 100%);
+}
+.pumpkin-mouth{
+  left:19px;
+  right:19px;
+  bottom:9px;
+  height:9px;
+  clip-path:polygon(0 0,15% 40%,30% 0,45% 45%,60% 0,75% 40%,100% 0,90% 100%,72% 70%,58% 100%,43% 68%,28% 100%,12% 72%);
+}
+.chicken-avatar[data-style="halloween_chicken"] .chicken-body{
+  background:#fff8ea!important;
+}
+.chicken-avatar[data-style="halloween_chicken"] .chef-hat:after,
+.chicken-avatar[data-style="halloween_chicken"] .chef-hat span{
+  background:#fff!important;
+}
+.chicken-avatar[data-style="halloween_chicken"] .pumpkin-suit{
+  display:block;
+}
+.chicken-avatar[data-style="halloween_chicken"] .wing{
+  background:#f5dfba;
+  z-index:4;
+}
+.chicken-avatar[data-style="halloween_chicken"] .legs{
+  z-index:1;
+}
+@media(max-width:900px){
+  .duck-lane{
+    grid-template-columns:128px minmax(0,1fr);
+  }
+  .lane-question{
+    font-size:.94rem;
+    padding:6px 4px;
+  }
+  .duck-target{
+    width:116px;
+  }
+}
+@media(max-width:650px){
+  .duck-lane{
+    grid-template-columns:102px minmax(0,1fr);
+    min-height:108px;
+  }
+  .duck-lane-playfield{min-height:108px}
+  .lane-question{
+    font-size:.78rem;
+    padding:6px 3px;
+  }
+  .duck-lane-label span{font-size:.52rem}
+  .duck-target{
+    width:104px;
+    min-height:69px;
+  }
+  .duck-answer{font-size:1.08rem}
+}
