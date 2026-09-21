@@ -523,9 +523,9 @@ body.level-up .topbar{
   transform:translateX(-50%);
   width:17px;
   height:13px;
-  background:#ffb531;
-  border:3px solid var(--ink);
-  clip-path:polygon(0 0,100% 50%,0 100%);
+  background:url('chicken-beak.svg') center/contain no-repeat;
+  border:0;
+  clip-path:none;
 }
 .wattle{
   position:absolute;
