@@ -341,6 +341,7 @@ function startRush(){
   $('rushInput').disabled=false;
   $('rushSubmit').disabled=false;
   $('rushStart').disabled=true;
+  $('rushQuit').disabled=false;
   $('rushMsg').textContent='';
   rushNext();
   renderRush();
@@ -348,24 +349,26 @@ function startRush(){
   rush.timer=setInterval(async()=>{
     rush.time--;
     renderRush();
-    if(rush.time<=0)await finishRush();
+    if(rush.time<=0)await finishRush('time');
   },1000);
 }
-async function finishRush(){
+async function finishRush(reason='time'){
   clearInterval(rush.timer);
   if(!rush.active)return;
   rush.active=false;
   $('rushInput').disabled=true;
   $('rushSubmit').disabled=true;
   $('rushStart').disabled=false;
+  $('rushQuit').disabled=true;
+  const elapsed=Math.max(1,60-rush.time);
   try{
     await rpc('submit_score',{
       p_session_token:sessionToken,p_mode:'rush',p_level:player.current_level,
       p_score:rush.score,p_correct:rush.correct,p_incorrect:rush.incorrect,
-      p_duration_seconds:60,p_metadata:{difficulty_max:maxFactorForLevel(player.current_level)}
+      p_duration_seconds:elapsed,p_metadata:{difficulty_max:maxFactorForLevel(player.current_level),end:reason}
     });
   }catch(e){}
-  $('rushMsg').textContent=`Finished! Score ${rush.score} · ${rush.correct} correct · ${rush.incorrect} incorrect.`;
+  $('rushMsg').textContent=`${reason==='quit'?'Ended early!':'Finished!'} Score ${rush.score} · ${rush.correct} correct · ${rush.incorrect} incorrect.`;
 }
 function rushNext(){
   rush.q=makeQ(player.current_level,true);
@@ -442,16 +445,25 @@ function buildDuckTarget(row,index){
   btn.dataset.row=row;
   btn.style.setProperty('--duck-speed',speed+'s');
   btn.style.setProperty('--duck-delay',(-index*(speed/DUCK.perLane))+'s');
-  btn.innerHTML=`<span class="duck-icon" aria-hidden="true">🦆</span><span class="duck-eq"></span><span class="duck-points">+${row}</span><span class="duck-flag" aria-hidden="true"></span>`;
+  btn.innerHTML=`<svg class="duck-shape" viewBox="0 0 150 96" aria-hidden="true" focusable="false">
+    <ellipse class="duck-body" cx="60" cy="64" rx="54" ry="30"></ellipse>
+    <circle class="duck-body duck-head" cx="106" cy="33" r="23"></circle>
+    <polygon class="duck-beak" points="123,27 149,23 149,39 123,41"></polygon>
+    <circle class="duck-eye" cx="112" cy="26" r="3.2"></circle>
+  </svg><span class="duck-eq"></span><span class="duck-points">+${row}</span><span class="duck-flag" aria-hidden="true"></span>`;
   btn.addEventListener('pointerdown',e=>{e.preventDefault();shootDuck(btn);});
   btn.addEventListener('click',e=>{if(e.detail===0)shootDuck(btn);}); // keyboard / switch access
   return btn;
+}
+function setDuckEqText(el,text){
+  el.textContent=text;
+  el.style.fontSize=text.length<=9?'':text.length<=11?'.86rem':text.length<=13?'.74rem':'.64rem';
 }
 function loadDuck(btn,eq){
   btn._eq=eq;
   btn.classList.remove('hit','miss','busy');
   btn.querySelector('.duck-flag').textContent='';
-  btn.querySelector('.duck-eq').textContent=`${eq.a} × ${eq.b} = ${eq.shown}`;
+  setDuckEqText(btn.querySelector('.duck-eq'),`${eq.a} × ${eq.b} = ${eq.shown}`);
   btn.setAttribute('aria-label',`${eq.a} times ${eq.b} equals ${eq.shown}`);
 }
 function laneHas(row,kind,except){
@@ -493,7 +505,7 @@ function shootDuck(btn){
     duck.score=Math.max(0,duck.score-DUCK.missPenalty);
     btn.classList.add('miss');
     btn.querySelector('.duck-flag').textContent='✗';
-    btn.querySelector('.duck-eq').textContent=`${eq.a} × ${eq.b} = ${eq.answer}`;
+    setDuckEqText(btn.querySelector('.duck-eq'),`${eq.a} × ${eq.b} = ${eq.answer}`);
     const left=DUCK.maxMisses-duck.incorrect;
     setDuckStatus(`Oops! ${eq.a} × ${eq.b} is ${eq.answer}, not ${eq.shown}. −${DUCK.missPenalty} points. ${left>0?`${left} miss${left===1?'':'es'} left.`:''}`,false);
     shakeDuckBoard();
@@ -516,6 +528,7 @@ function startDuck(){
   clearInterval(duck.timer);
   duck={timer:null,time:DUCK.time,score:0,correct:0,incorrect:0,active:true,rowStats:{1:0,2:0,3:0}};
   $('duckStart').disabled=true;
+  $('duckQuit').disabled=false;
   $('duckCarnival').classList.remove('is-over','is-won');
   $('duckOver').hidden=true;
   setDuckStatus('Go! Tap only the TRUE ducks. Top row is faster and worth more.');
@@ -535,14 +548,16 @@ async function finishDuck(reason){
   $('duckCarnival').classList.add('is-over');
   if(success) $('duckCarnival').classList.add('is-won');
   $('duckStart').disabled=false;
+  $('duckQuit').disabled=true;
   $('duckStart').textContent=success?'Play again':'Try again';
   const over=$('duckOver');
-  over.querySelector('.duck-over-emoji').textContent=success?'🎉':reason==='misses'?'💦':'⏰';
+  over.querySelector('.duck-over-emoji').textContent=success?'🎉':reason==='misses'?'💦':reason==='quit'?'🚪':'⏰';
   over.querySelector('.duck-over-title').textContent=
-    success?'Hint earned!':reason==='misses'?'Game over!':'Time’s up!';
+    success?'Hint earned!':reason==='misses'?'Game over!':reason==='quit'?'Quit game':'Time’s up!';
   over.querySelector('.duck-over-text').textContent=
     success?`${duck.score} points with ${duck.incorrect} miss${duck.incorrect===1?'':'es'}. Heading back to the map…`
     :reason==='misses'?`${DUCK.maxMisses} wrong ducks. Slow down and check each fact. You had ${duck.score} points.`
+    :reason==='quit'?`You left with ${duck.score} point${duck.score===1?'':'s'}. Tap Start when you’re ready to try again.`
     :`You got ${duck.score} of ${DUCK.goal} points. So close. Try again!`;
   over.hidden=false;
   setDuckStatus(success?'Hint earned! 🎉':'Tap “Try again” to play another round.',success?true:null);
@@ -656,8 +671,10 @@ $('serveBtn').onclick=serveOrder;
 $('hintBtn').onclick=useHint;
 $('rushStart').onclick=startRush;
 $('rushSubmit').onclick=rushAnswer;
+$('rushQuit').onclick=()=>finishRush('quit');
 $('rushInput').addEventListener('keydown',e=>{if(e.key==='Enter')rushAnswer();});
 $('duckStart').onclick=startDuck;
+$('duckQuit').onclick=()=>finishDuck('quit');
 $('duckOverBtn').onclick=startDuck;
 $('rushBoardBtn').onclick=()=>{
   $('rushBoardBtn').classList.add('active');

@@ -1056,33 +1056,47 @@ body.level-up .topbar{
 .duck-lane-label strong{font-size:1.5rem}
 .duck-lane-label span{font-size:.72rem}
 .duck-target{
-  left:-260px;width:max-content;min-width:176px;min-height:86px;padding:6px 10px 8px;
-  display:grid;grid-template-columns:1fr auto;
-  grid-template-areas:"duck pts" "eq eq";
-  gap:2px 6px;align-items:center;
+  left:-190px;width:150px;height:96px;padding:0;
+  background:none;border:none;box-shadow:none;border-radius:0;
+  display:block;
   -webkit-tap-highlight-color:transparent;touch-action:manipulation;
   -webkit-user-select:none;user-select:none;
 }
 .duck-target.ltr{animation-name:duckSwimRight}
 .duck-target.rtl{animation-name:duckSwimLeft}
-@keyframes duckSwimRight{from{left:-260px}to{left:calc(100% + 24px)}}
-@keyframes duckSwimLeft{from{left:calc(100% + 24px)}to{left:-260px}}
-.duck-target .duck-icon{grid-area:duck;font-size:1.7rem;justify-self:start}
-.duck-target .duck-points{grid-area:pts}
+@keyframes duckSwimRight{from{left:-190px}to{left:calc(100% + 24px)}}
+@keyframes duckSwimLeft{from{left:calc(100% + 24px)}to{left:-190px}}
+/* the duck target IS a yellow rubber duck: an SVG body + head + beak,
+   with the true/false equation printed on its body */
+.duck-shape{position:absolute;inset:0;width:100%;height:100%;overflow:visible;filter:drop-shadow(3px 4px 0 var(--ink))}
+.duck-body{fill:#ffd23f;stroke:var(--ink);stroke-width:4}
+.duck-beak{fill:#ff9f1c;stroke:var(--ink);stroke-width:4;stroke-linejoin:round}
+.duck-eye{fill:var(--ink)}
+.duck-target.rtl .duck-shape{transform:scaleX(-1)}
+.duck-target:active{box-shadow:none}
 .duck-eq{
-  grid-area:eq;display:block;text-align:center;white-space:nowrap;
-  font-size:1.3rem;font-weight:1000;line-height:1.1;letter-spacing:-.01em;
-  font-variant-numeric:tabular-nums;background:#fffdf5;border:2px solid var(--ink);
-  border-radius:10px;padding:4px 8px;
+  position:absolute;top:65%;left:40%;transform:translate(-50%,-50%);
+  text-align:center;white-space:nowrap;
+  font-size:1rem;font-weight:1000;line-height:1.05;letter-spacing:-.03em;
+  font-variant-numeric:tabular-nums;color:var(--ink);
+  pointer-events:none;
 }
+.duck-target.rtl .duck-eq{left:60%}
+.duck-points{
+  position:absolute;top:-8px;left:-8px;font-size:.7rem;font-weight:1000;
+  border:2px solid var(--ink);border-radius:999px;padding:2px 6px;
+  background:#fff5c8;pointer-events:none;
+}
+.duck-target.rtl .duck-points{left:auto;right:-8px}
 .duck-flag{position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:1.4rem;font-weight:1000;
-  width:34px;height:34px;border-radius:50%;display:none;place-items:center;border:3px solid var(--ink)}
-.duck-target.hit,.duck-target.miss{animation-play-state:paused}
-.duck-target.hit{background:#83e09a;outline:5px solid #e7ffec}
+  width:34px;height:34px;border-radius:50%;display:none;place-items:center;border:3px solid var(--ink);z-index:2}
+.duck-target.hit,.duck-target.miss{animation-play-state:paused;background:none;outline:none}
+.duck-target.hit{filter:drop-shadow(0 0 7px #2f9a4a)}
+.duck-target.hit .duck-body{fill:#8be89c}
 .duck-target.hit .duck-flag{display:grid;background:#2f9a4a;color:#fff}
-.duck-target.miss{background:#ff9c86;outline:5px solid #ffe0d9}
+.duck-target.miss{filter:drop-shadow(0 0 7px #c8321e)}
+.duck-target.miss .duck-body{fill:#ff9c86}
 .duck-target.miss .duck-flag{display:grid;background:#c8321e;color:#fff}
-.duck-target.miss .duck-eq{background:#fff3ef}
 .duck-carnival.is-over .duck-target{animation-play-state:paused!important;opacity:.55}
 .duck-over{position:absolute;inset:0;z-index:10;display:grid;place-items:center;
   background:rgba(42,26,17,.42);padding:14px}
@@ -1104,6 +1118,6 @@ body.level-up .topbar{
   .duck-lane-playfield{min-height:112px}
   .duck-lane-label strong{font-size:1.15rem}
   .duck-lane-label span{font-size:.56rem}
-  .duck-target{min-width:150px;min-height:78px}
-  .duck-eq{font-size:1.1rem}
+  .duck-target{width:122px;height:80px}
+  .duck-eq{font-size:.98rem}
 }
