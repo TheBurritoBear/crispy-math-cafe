@@ -443,7 +443,15 @@ function chickenPreviewMarkup(style='plain',mini=false,color='natural',costume='
         <span class="pumpkin-nose"></span>
         <span class="pumpkin-mouth"></span>
       </div>
-      <div class="costume-suit"><span class="costume-badge"></span><span class="costume-belt"></span></div>
+      <div class="costume-suit">${costume==='dress'?`<svg class="party-dress" viewBox="0 0 110 90" aria-hidden="true">
+        <path d="M33 8 L42 8 Q55 25 68 8 L77 8 L73 34 Q87 53 104 78 Q55 96 6 78 Q23 53 37 34Z" fill="#a56de2" stroke="#2a1a11" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M37 34 Q55 39 73 34 L78 43 Q55 49 32 43Z" fill="#ffd45a" stroke="#2a1a11" stroke-width="2"/>
+        <path d="M39 50 L29 77 M55 52 L55 81 M71 50 L81 77" fill="none" stroke="#814bb9" stroke-width="3" stroke-linecap="round"/>
+        <path d="M12 77 Q55 91 98 77" fill="none" stroke="#f6d5ff" stroke-width="4"/>
+        <path d="M43 33 L55 38 L67 33 L67 47 L55 42 L43 47Z" fill="#f6bff0" stroke="#2a1a11" stroke-width="2" stroke-linejoin="round"/>
+        <circle cx="55" cy="40" r="4" fill="#ffd45a" stroke="#2a1a11" stroke-width="2"/>
+      </svg>`:'<span class="costume-badge"></span><span class="costume-belt"></span>'}</div>
+      ${costume==='dress'?`<svg class="party-hair-bow" viewBox="0 0 36 24" aria-hidden="true"><path d="M3 3 Q11 1 18 9 Q25 1 33 3 L33 21 Q25 23 18 15 Q11 23 3 21Z" fill="#a56de2" stroke="#2a1a11" stroke-width="2.5" stroke-linejoin="round"/><ellipse cx="18" cy="12" rx="4" ry="6" fill="#ffd45a" stroke="#2a1a11" stroke-width="2"/></svg>`:''}
       <div class="wing wing-left"></div>
       <div class="wing wing-right"></div>
       <div class="tail"></div>

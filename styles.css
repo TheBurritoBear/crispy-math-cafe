@@ -1020,16 +1020,16 @@ body.level-up .topbar{
   background:var(--feather);border-color:var(--ink);
   border-radius:35% 35% 40% 40%;box-shadow:none;
 }
+/* Outlined bodice and flared skirt, positioned on the torso. */
 .chicken-avatar[data-costume="dress"] .costume-suit{
-  inset:17px -8px -2px;
-  background:radial-gradient(circle,#fff7da 1.7px,transparent 2px) 0 0/14px 14px,#a56de2;
-  border:3px solid var(--ink);border-radius:35% 35% 16% 16%;
+  inset:0; background:none;border:0;border-radius:0;
 }
+.party-dress{position:absolute;top:0;left:50%;transform:translateX(-50%);width:110px;height:90px;overflow:visible}
 .chicken-avatar[data-costume="dress"] .wing{z-index:3}
-.chicken-avatar[data-costume="dress"] .costume-belt{position:absolute;left:8%;right:8%;top:17px;height:9px;background:#ffd45a;border-block:2px solid var(--ink)}
-.chicken-avatar[data-costume="dress"] .costume-badge{position:absolute;left:39%;top:13px;width:22px;height:17px;background:#f6bff0;clip-path:polygon(0 0,50% 35%,100% 0,100% 100%,50% 65%,0 100%);z-index:1}
-.chicken-avatar[data-costume="dress"] .chef-hat{top:22px;left:67%;width:34px;height:21px;transform:rotate(17deg);background:#a56de2;clip-path:polygon(0 0,50% 30%,100% 0,100% 100%,50% 70%,0 100%);z-index:6}
-.chicken-avatar[data-costume="dress"] .chef-hat::after{inset:5px 13px;height:auto;background:#ffd45a;border:0;border-radius:50%}
+.chicken-avatar[data-costume="dress"] .chef-hat{display:none}
+/* Head and bow share the same body anchor, including scaled previews. */
+.party-hair-bow{position:absolute;top:-52px;left:calc(50% + 8px);width:30px;height:22px;
+  transform:rotate(12deg);z-index:6;overflow:visible}
 
 /* Cowboy: suede vest, red bandana, sheriff star and broad-brimmed hat. */
 .chicken-avatar[data-costume="cowboy"] .chicken-body{background:linear-gradient(90deg,#98623c 0 27%,#ffebc6 28% 72%,#98623c 73%)}
