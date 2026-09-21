@@ -1017,15 +1017,22 @@ body.level-up .topbar{
 
 /* Purple party dress, flared skirt, gold sash and matching hair bow. */
 .chicken-avatar[data-costume="dress"] .chicken-body{
+  width:48px;
   background:var(--feather);border-color:var(--ink);
   border-radius:35% 35% 40% 40%;box-shadow:none;
 }
+/* Keep the face centered on its head when only the dress torso narrows. */
+.chicken-avatar[data-costume="dress"] .eye-left{left:calc(50% - 15px)}
+.chicken-avatar[data-costume="dress"] .eye-right{right:calc(50% - 15px)}
+.chicken-avatar[data-costume="dress"] .comb{left:calc(50% - 16px)}
 /* Outlined bodice and flared skirt, positioned on the torso. */
 .chicken-avatar[data-costume="dress"] .costume-suit{
   inset:0; background:none;border:0;border-radius:0;
 }
 .party-dress{position:absolute;top:0;left:50%;transform:translateX(-50%);width:110px;height:90px;overflow:visible}
-.chicken-avatar[data-costume="dress"] .wing{z-index:3}
+.chicken-avatar[data-costume="dress"] .wing{top:12px;width:20px;height:29px;z-index:3}
+.chicken-avatar[data-costume="dress"] .wing-left{left:-17px}
+.chicken-avatar[data-costume="dress"] .wing-right{right:-17px}
 .chicken-avatar[data-costume="dress"] .chef-hat{display:none}
 /* Head and bow share the same body anchor, including scaled previews. */
 .party-hair-bow{position:absolute;top:-52px;left:calc(50% + 8px);width:30px;height:22px;
