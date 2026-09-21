@@ -646,7 +646,7 @@ async function renderShop(){
       const options=[{id:defaultId,display_name:defaultName,description:category==='color'?'Use your unlocked sauce color.':'Back to your chef hat.',free:true},...items];
       return `<section class="shop-category"><h3>${title}</h3><p class="muted">${subtitle}</p><div class="shop-grid">${options.map(i=>{
         const owned=i.free||player.purchased_items.includes(i.id);
-        const locked=!i.free&&player.current_level<i.min_level;
+        const locked=!owned&&player.current_level<i.min_level;
         const equipped=look[category]===i.id;
         const previewColor=category==='color'?i.id:look.color;
         const previewCostume=category==='costume'?i.id:look.costume;
