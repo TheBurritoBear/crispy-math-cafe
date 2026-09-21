@@ -91,7 +91,9 @@
   width:11%;z-index:4;padding:0;border:0;background:none;cursor:pointer;
   font-family:inherit;font-size:2.05cqi;touch-action:manipulation;
   -webkit-tap-highlight-color:transparent;
+  box-shadow:none;border-radius:0;   /* cancel the global button look from styles.css */
 }
+.tb-bldg:active:not(:disabled){transform:translate(-50%,-50%);box-shadow:none}
 .tb-bldg.is-new{animation:townSprout .65s cubic-bezier(.2,1.5,.4,1) both}
 @keyframes townSprout{from{transform:translate(-50%,-20%) scale(.2);opacity:0}}
 /* roof = dark outline layer + colored inner layer (no border, so clip-path
