@@ -95,17 +95,25 @@ function enterGame(){
   $('authCard').classList.add('hidden');
   $('gameApp').classList.remove('hidden');
   updateUI();
-  nextOrder();
+  // the town owns which building is ordering; app.js still owns the math
+  Town.init({
+    level:player.current_level,
+    makeQuestion:()=>makeQ(player.current_level),
+    onOpen:renderOrder,
+    onClose:hideOrderTicket
+  });
   renderShop();
 }
 function showPanel(panelId){
   document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('active',b.dataset.tab===panelId));
   document.querySelectorAll('.panel').forEach(p=>p.classList.add('hidden'));
   $(panelId).classList.remove('hidden');
+  if(panelId!=='orders') hideOrderTicket();
   if(panelId==='leaderboard') loadBoard('rush');
   if(panelId==='shop') renderShop();
 }
 function openHintGame(){
+  hideOrderTicket();
   showPanel('duck');
   updateUnlockUI();
   $('duckStatus').textContent='You’re out of hints. Beat the goal to earn +1 and jump back to your order.';
@@ -149,6 +157,8 @@ function updateUI(){
     :'All sauce styles unlocked!';
   renderSauces();
   updateUnlockUI();
+  // grow the town if the player just levelled up
+  if(window.Town) Town.setLevel(player.current_level);
 }
 function renderSauces(){
   $('sauceGrid').innerHTML=sauces.map(s=>{
@@ -169,17 +179,28 @@ async function equipStyle(id){
     await savePlayer({active_chicken:id});
   }catch(e){alert(e.message);}
 }
-function nextOrder(){
-  currentQ=makeQ(player.current_level);
+
+/* ---------- order ticket, driven by the town map ---------- */
+function renderOrder(order){
+  currentQ=order;
   const goal=levelGoal(player.current_level);
+  $('ticketIcon').textContent=order.icon;
   $('orderCounter').textContent=`ORDER ${Math.min(goal,player.level_correct+1)} OF ${goal}`;
-  $('equation').textContent=`${currentQ.a} × ${currentQ.b} = ?`;
-  $('orderStory').textContent=`${currentQ.a} boxes. ${currentQ.b} pieces in each box.`;
+  $('orderPrompt').textContent=`${order.name} wants chicken!`;
+  $('orderStory').textContent=`${order.a} boxes. ${order.b} pieces in each box.`;
+  $('equation').textContent=`${order.a} × ${order.b} = ?`;
   $('orderQuestion').textContent='How many pieces altogether?';
   $('answerInput').value='';
   $('feedback').textContent='';
   $('feedback').className='feedback';
+  $('serveBtn').disabled=false;
+  $('orderTicketHost').classList.add('open');
 }
+function hideOrderTicket(){
+  $('orderTicketHost').classList.remove('open');
+  currentQ=null;
+}
+
 async function savePlayer(patch={}){
   const args={
     p_session_token:sessionToken,
@@ -202,11 +223,13 @@ async function savePlayer(patch={}){
   return player;
 }
 async function serveOrder(){
+  if(!currentQ)return;
   const raw=$('answerInput').value.trim();
   if(raw==='')return;
   const val=Number(raw);
   if(!Number.isFinite(val))return;
   $('serveBtn').disabled=true;
+  const buildingId=currentQ.buildingId;
   const correct=val===currentQ.answer;
   let lvl=player.current_level,lc=player.level_correct,coins=player.coins,streak=player.current_streak;
   let levelUp=false;
@@ -221,6 +244,7 @@ async function serveOrder(){
     $('feedback').textContent=`Not quite · ${currentQ.a} × ${currentQ.b} = ${currentQ.answer}`;
     $('feedback').className='feedback bad';
     flashFeedback(false);
+    shakeTicket();
   }
   try{
     await savePlayer({
@@ -232,20 +256,31 @@ async function serveOrder(){
       best_streak:Math.max(player.best_streak,streak)
     });
     setTimeout(()=>{
-      nextOrder();
+      // right answer: scooter flies over and the customer is done.
+      // wrong answer: same customer, brand new question, ticket stays open.
+      if(correct) Town.complete(buildingId);
+      else Town.reroll(buildingId);
       $('serveBtn').disabled=false;
       renderShop();
-    },correct?520:900);
+    },correct?520:1100);
   }catch(e){
     $('serveBtn').disabled=false;
     setMsg($('feedback'),e.message);
   }
+}
+function shakeTicket(){
+  const card=document.querySelector('#orderTicketHost .order-card');
+  if(!card)return;
+  card.classList.remove('shake');
+  void card.offsetWidth;
+  card.classList.add('shake');
 }
 async function useHint(){
   if(player.hints<=0){
     openHintGame();
     return;
   }
+  if(!currentQ)return;
   $('feedback').textContent=`Hint: count ${currentQ.a} groups of ${currentQ.b}. Try skip-counting by ${currentQ.b}s.`;
   $('feedback').className='feedback good';
   await savePlayer({hints:player.hints-1});
@@ -268,7 +303,7 @@ function flashFeedback(levelUp=false){
     setTimeout(()=>document.body.classList.remove('level-up'),750);
   }
 }
-function skipOrder(){nextOrder();}
+function skipOrder(){ Town.skip(); }
 function appendAnswer(n){
   const input=$('answerInput');
   if(input.value.length>=5)return;
@@ -484,7 +519,7 @@ async function finishDuck(success){
   }catch(e){}
   if(success){
     await savePlayer({hints:player.hints+1});
-    $('duckStatus').textContent=`20 points! Hint earned 🎉 Returning to your order…`;
+    $('duckStatus').textContent=`20 points! Hint earned 🎉 Returning to the map…`;
     setTimeout(()=>showPanel('orders'),1100);
   }else{
     $('duckStatus').textContent=`Time! You scored ${duck.score}/20. Tap Start to try again.`;
@@ -574,7 +609,6 @@ $('createBtn').onclick=createPlayer;
 $('loginBtn').onclick=login;
 $('serveBtn').onclick=serveOrder;
 $('hintBtn').onclick=useHint;
-$('answerInput').addEventListener('keydown',e=>{if(e.key==='Enter')serveOrder();});
 $('rushStart').onclick=startRush;
 $('rushSubmit').onclick=rushAnswer;
 $('rushInput').addEventListener('keydown',e=>{if(e.key==='Enter')rushAnswer();});
@@ -590,4 +624,15 @@ $('duckBoardBtn').onclick=()=>{
   loadBoard('duck_dash');
 };
 $('logoutBtn').onclick=logout;
+
+// hardware keyboard (iPad Smart Keyboard, laptops). The answer box is
+// read-only so iPad never slides the software keyboard over the game.
+document.addEventListener('keydown',e=>{
+  if(!currentQ)return;
+  if(e.key>='0'&&e.key<='9'){appendAnswer(e.key);}
+  else if(e.key==='Backspace'){deleteAnswer();e.preventDefault();}
+  else if(e.key==='Enter'){serveOrder();}
+  else if(e.key==='Escape'){Town.skip();}
+});
+
 tryRestore();

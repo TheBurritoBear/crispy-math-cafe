@@ -1,297 +1,344 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="theme-color" content="#8f1d14" />
-  <title>Crispy Math Café</title>
-  <link rel="stylesheet" href="styles.css?v=20260920-2315" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta name="theme-color" content="#8f1d14" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="Crispy Math Café" />
+<title>Crispy Math Café</title>
+<link rel="stylesheet" href="styles.css?v=20260920-2300" />
+<link rel="stylesheet" href="town.css?v=20260920-2300" />
 </head>
 <body>
-  <div class="page-pattern" aria-hidden="true"></div>
+<div class="page-pattern" aria-hidden="true"></div>
+<main class="shell">
+<header class="topbar">
+<div class="brand-lockup">
+<div class="logo-mark">🍗</div>
+<div>
+<div class="eyebrow">KOREAN FRIED CHICKEN · 치킨</div>
+<h1>Crispy Math Café</h1>
+<p class="tagline">Multiply. Pack. Serve. Level up.</p>
+</div>
+</div>
+<div class="top-stats">
+<span class="pill cloud-pill">☁ Cloud save</span>
+<span class="pill" id="coinBadge">0 coins</span>
+<span class="pill level-pill" id="levelBadge">Level 1</span>
+</div>
+</header>
 
-  <main class="shell">
-    <header class="topbar">
-      <div class="brand-lockup">
-        <div class="logo-mark">🍗</div>
-        <div>
-          <div class="eyebrow">KOREAN FRIED CHICKEN · 치킨</div>
-          <h1>Crispy Math Café</h1>
-          <p class="tagline">Multiply. Pack. Serve. Level up.</p>
-        </div>
-      </div>
-      <div class="top-stats">
-        <span class="pill cloud-pill">☁ Cloud save</span>
-        <span class="pill" id="coinBadge">0 coins</span>
-        <span class="pill level-pill" id="levelBadge">Level 1</span>
-      </div>
-    </header>
+<section id="authCard" class="auth-wrap">
+<div class="auth-poster">
+<div class="poster-kicker">WELCOME TO YOUR</div>
+<div class="poster-title">CHICKEN<br>SHOP</div>
+<div class="poster-chicken">🐔</div>
+<div class="open-sign">OPEN</div>
+<p>Serve orders, earn coins, unlock sauces, and build your multiplication streak.</p>
+</div>
+<div class="card auth-card">
+<div class="section-kicker">PLAYER SAVE</div>
+<h2>Pick up where you left off</h2>
+<p class="muted">Use the same player name and private save code on any device.</p>
+<label>
+<span>Player name</span>
+<input id="playerName" maxlength="24" placeholder="Example: James" autocomplete="username" />
+</label>
+<label>
+<span>Private save code</span>
+<input id="saveCode" type="password" maxlength="32" placeholder="4–32 characters" autocomplete="current-password" />
+</label>
+<div class="actions stacked-mobile">
+<button id="loginBtn" class="primary">Continue game</button>
+<button id="createBtn" class="secondary">Create new player</button>
+</div>
+<p id="authMsg" class="msg" role="status"></p>
+<p class="tiny-note">No email needed. Your save code is private and is not stored in readable form.</p>
+</div>
+</section>
 
-    <section id="authCard" class="auth-wrap">
-      <div class="auth-poster">
-        <div class="poster-kicker">WELCOME TO YOUR</div>
-        <div class="poster-title">CHICKEN<br>SHOP</div>
-        <div class="poster-chicken">🐔</div>
-        <div class="open-sign">OPEN</div>
-        <p>Serve orders, earn coins, unlock sauces, and build your multiplication streak.</p>
-      </div>
+<section id="gameApp" class="hidden">
+<nav class="tabs" aria-label="Game modes">
+<button data-tab="orders" class="active"><span>🍗</span> Take orders</button>
+<button data-tab="rush"><span>⚡</span> 60-second rush</button>
+<button data-tab="shop"><span>🛍</span> Coin shop</button>
+<button data-tab="leaderboard"><span>🏆</span> Leaderboards</button>
+</nav>
 
-      <div class="card auth-card">
-        <div class="section-kicker">PLAYER SAVE</div>
-        <h2>Pick up where you left off</h2>
-        <p class="muted">Use the same player name and private save code on any device.</p>
-        <label>
-          <span>Player name</span>
-          <input id="playerName" maxlength="24" placeholder="Example: James" autocomplete="username" />
-        </label>
-        <label>
-          <span>Private save code</span>
-          <input id="saveCode" type="password" maxlength="32" placeholder="4–32 characters" autocomplete="current-password" />
-        </label>
-        <div class="actions stacked-mobile">
-          <button id="loginBtn" class="primary">Continue game</button>
-          <button id="createBtn" class="secondary">Create new player</button>
-        </div>
-        <p id="authMsg" class="msg" role="status"></p>
-        <p class="tiny-note">No email needed. Your save code is private and is not stored in readable form.</p>
-      </div>
-    </section>
+<section id="orders" class="panel">
+<div class="game-grid">
+<aside class="side-stack">
+<section class="card shop-card">
+<div class="shop-heading">
+<div>
+<div class="section-kicker">YOUR SHOP</div>
+<h2 id="storeTitle">My Chicken Shop</h2>
+</div>
+<div class="open-sign small">OPEN</div>
+</div>
+<div class="chef-stage">
+<div id="chickenAvatar" class="chicken-avatar" data-style="plain" aria-label="Your chicken chef">
+<div class="chef-hat" aria-hidden="true"><span></span><span></span><span></span></div>
+<div class="chicken-body" aria-hidden="true">
+<div class="comb"></div>
+<div class="eye eye-left"></div>
+<div class="eye eye-right"></div>
+<div class="beak"></div>
+<div class="wattle"></div>
+<div class="wing wing-left"></div>
+<div class="wing wing-right"></div>
+<div class="tail"></div>
+<div class="legs"><span></span><span></span></div>
+</div>
+</div>
+<div>
+<strong>Your chicken chef</strong>
+<div id="chickenStyleLabel" class="muted">Serving plain chicken</div>
+</div>
+</div>
+<div id="storeNameEditor" class="store-name-editor hidden">
+<div class="store-name-label">NAME YOUR STORE</div>
+<div class="store-name-row">
+<input id="storeNameInput" maxlength="30" placeholder="My Chicken Shop" />
+<button id="saveStoreName" type="button">Save</button>
+</div>
+</div>
+<div class="shop-copy" id="shopCopy">Let’s fill ten orders, at your own pace.</div>
+<div class="shop-stats">
+<div><strong id="ordersFilled">0</strong><span>orders filled</span></div>
+<div><strong id="streakValue">0</strong><span>in a row</span></div>
+</div>
+</section>
 
-    <section id="gameApp" class="hidden">
-      <nav class="tabs" aria-label="Game modes">
-        <button data-tab="orders" class="active"><span>🍗</span> Take orders</button>
-        <button data-tab="rush"><span>⚡</span> 60-second rush</button>
-        <button data-tab="shop"><span>🛍</span> Coin shop</button>
-        <button data-tab="leaderboard"><span>🏆</span> Leaderboards</button>
-      </nav>
+<section class="card progress-card">
+<div class="section-kicker">LEVEL PROGRESS & SAUCES</div>
+<div class="progress-title">
+<strong id="progressText">0 / 10 correct to complete this level</strong>
+</div>
+<div class="progress-track" aria-hidden="true"><div id="progressFill"></div></div>
+<p id="nextUnlockText" class="unlock-copy">Complete level 1: unlock Original</p>
+<div id="sauceGrid" class="sauce-grid"></div>
+</section>
+</aside>
 
-      <section id="orders" class="panel">
-        <div class="game-grid">
-          <aside class="side-stack">
-            <section class="card shop-card">
-              <div class="shop-heading">
-                <div>
-                  <div class="section-kicker">YOUR SHOP</div>
-                  <h2 id="storeTitle">My Chicken Shop</h2>
-                </div>
-                <div class="open-sign small">OPEN</div>
-              </div>
+<!-- ===== the town ===== -->
+<div class="town-col">
+<section class="town-card">
+<div class="town-head">
+<div>
+<div class="town-kicker">TAKE ORDERS</div>
+<h2 id="townTierName">Crispy Village</h2>
+</div>
+<span class="town-tier">NO TIMER</span>
+</div>
 
-              <div class="chef-stage">
-                <div id="chickenAvatar" class="chicken-avatar" data-style="plain" aria-label="Your chicken chef">
-                  <div class="chef-hat" aria-hidden="true"><span></span><span></span><span></span></div>
-                  <div class="chicken-body" aria-hidden="true">
-                    <div class="comb"></div>
-                    <div class="eye eye-left"></div>
-                    <div class="eye eye-right"></div>
-                    <div class="beak"></div>
-                    <div class="wattle"></div>
-                    <div class="pumpkin-suit" aria-hidden="true">
-                      <span class="pumpkin-eye pumpkin-eye-left"></span>
-                      <span class="pumpkin-eye pumpkin-eye-right"></span>
-                      <span class="pumpkin-nose"></span>
-                      <span class="pumpkin-mouth"></span>
-                    </div>
-                    <div class="wing wing-left"></div>
-                    <div class="wing wing-right"></div>
-                    <div class="tail"></div>
-                    <div class="legs"><span></span><span></span></div>
-                  </div>
-                </div>
-                <div>
-                  <strong>Your chicken chef</strong>
-                  <div id="chickenStyleLabel" class="muted">Serving plain chicken</div>
-                </div>
-              </div>
+<div class="town-strip" id="townStrip">
+<span class="town-dot"></span>
+<span id="townStripText">Opening up… the village is quiet.</span>
+<span class="town-count" id="townCount">0 delivered</span>
+</div>
 
-              <div id="storeNameEditor" class="store-name-editor hidden">
-                <div class="store-name-label">NAME YOUR STORE</div>
-                <div class="store-name-row">
-                  <input id="storeNameInput" maxlength="30" placeholder="My Chicken Shop" />
-                  <button id="saveStoreName" type="button">Save</button>
-                </div>
-              </div>
+<div class="town-map" id="townMap">
+<div class="town-world" id="townWorld" style="--town-zoom:1.1">
+<div class="town-terrain" id="townTerrain"></div>
 
-              <div class="shop-copy" id="shopCopy">Let’s fill ten orders, at your own pace.</div>
+<div class="tb-road h" style="top:35.5%"></div>
+<div class="tb-road h" style="top:61.5%"></div>
+<div class="tb-road v" style="left:35.5%"></div>
+<div class="tb-road v" style="left:61.5%"></div>
+<div class="tb-road h" style="top:18%"></div>
+<div class="tb-road h" style="top:79%"></div>
+<div class="tb-road v" style="left:18%"></div>
+<div class="tb-road v" style="left:79%"></div>
 
-              <div class="shop-stats">
-                <div><strong id="ordersFilled">0</strong><span>orders filled</span></div>
-                <div><strong id="streakValue">0</strong><span>in a row</span></div>
-              </div>
-            </section>
+<div class="tb-shop" aria-hidden="true">
+<span class="tb-roof"></span>
+<span class="tb-body">
+<span class="tb-icon">🐔</span>
+<span class="tb-name">MY SHOP</span>
+</span>
+</div>
 
-            <section class="card progress-card">
-              <div class="section-kicker">LEVEL PROGRESS & SAUCES</div>
-              <div class="progress-title">
-                <strong id="progressText">0 / 10 correct to complete this level</strong>
-              </div>
-              <div class="progress-track" aria-hidden="true"><div id="progressFill"></div></div>
-              <p id="nextUnlockText" class="unlock-copy">Complete level 1: unlock Original</p>
-              <div id="sauceGrid" class="sauce-grid"></div>
-            </section>
-          </aside>
+<div class="tb-scooter" id="townScooter">🛵</div>
+</div>
 
-          <section class="card order-card">
-            <div class="order-card-top">
-              <div>
-                <div id="orderCounter" class="section-kicker">ORDER 1 OF 10</div>
-                <div class="no-timer">NO TIMER</div>
-              </div>
-              <div class="ticket-icon">🧾</div>
-            </div>
+<div class="town-toast" id="townToast"></div>
+<div class="town-banner" id="townBanner"></div>
+</div>
 
-            <div class="order-content">
-              <h2 id="orderPrompt">Pack the chicken!</h2>
-              <p id="orderStory" class="order-story">2 boxes. 3 pieces in each box.</p>
-              <div class="equation" id="equation">2 × 3 = ?</div>
-              <p id="orderQuestion" class="muted">How many pieces altogether?</p>
+<p class="town-legend">Orders ring in on their own. Tap the building with the 🍗 bubble to take it.</p>
+<div class="town-waiting" id="townWaiting"></div>
+</section>
+</div>
+</div>
+</section>
 
-              <div class="answer-row">
-                <span class="answer-label">YOUR ANSWER</span>
-                <input id="answerInput" inputmode="numeric" pattern="[0-9]*" aria-label="Answer" placeholder="?" />
-              </div>
+<section id="rush" class="panel card mode-card hidden">
+<div class="mode-header">
+<div>
+<div class="section-kicker">SPEED ROUND</div>
+<h2>⚡ 60-second rush</h2>
+<p>Answer as many as you can. +1 correct · −1 incorrect. The math gets harder as your level rises.</p>
+</div>
+<div class="mode-badge">60 SEC</div>
+</div>
+<div class="rush-scorebar">
+<div><span>TIME</span><strong id="rushTime">60s</strong></div>
+<div><span>SCORE</span><strong id="rushScore">0</strong></div>
+</div>
+<div class="mode-question">
+<div class="equation" id="rushEquation">Press start</div>
+<input id="rushInput" inputmode="numeric" placeholder="Answer" disabled />
+</div>
+<div class="actions">
+<button id="rushStart" class="primary">Start rush</button>
+<button id="rushSubmit" class="secondary" disabled>Submit answer</button>
+</div>
+<p id="rushMsg" class="msg" role="status"></p>
+</section>
 
-              <div id="numberPad" class="number-pad" aria-label="Number pad">
-                <button type="button" data-number="1">1</button>
-                <button type="button" data-number="2">2</button>
-                <button type="button" data-number="3">3</button>
-                <button type="button" data-number="4">4</button>
-                <button type="button" data-number="5">5</button>
-                <button type="button" data-number="6">6</button>
-                <button type="button" data-number="7">7</button>
-                <button type="button" data-number="8">8</button>
-                <button type="button" data-number="9">9</button>
-                <button type="button" class="pad-action" id="clearAnswer">Clear</button>
-                <button type="button" data-number="0">0</button>
-                <button type="button" class="pad-action" id="deleteAnswer">⌫</button>
-              </div>
+<section id="duck" class="panel card mode-card hidden">
+<div class="mode-header">
+<div>
+<div class="section-kicker">EARN A HINT · CARNIVAL GAME</div>
+<h2>🦆 Duck Dash</h2>
+<p id="duckIntro">Reach 20 points in 60 seconds. Higher rows are faster, harder, and worth more.</p>
+</div>
+<div class="mode-badge hint-badge">HINT +1</div>
+</div>
+<div class="rush-scorebar duck-scorebar">
+<div><span>TIME</span><strong id="duckTime">60s</strong></div>
+<div><span>POINTS</span><strong id="duckScore">0</strong></div>
+<div><span>GOAL</span><strong id="duckGoal">20</strong></div>
+</div>
+<div id="duckCarnival" class="duck-carnival" aria-label="Three moving duck rows">
+<div class="duck-lane lane-3">
+<div class="duck-lane-label"><strong>3 PTS</strong><span>Hardest · fastest →</span></div>
+<div id="duckLane3" class="duck-lane-playfield"></div>
+</div>
+<div class="duck-lane lane-2">
+<div class="duck-lane-label"><strong>2 PTS</strong><span>Medium · ←</span></div>
+<div id="duckLane2" class="duck-lane-playfield"></div>
+</div>
+<div class="duck-lane lane-1">
+<div class="duck-lane-label"><strong>1 PT</strong><span>Easiest · slowest →</span></div>
+<div id="duckLane1" class="duck-lane-playfield"></div>
+</div>
+</div>
+<div class="duck-answer-panel">
+<div class="equation duck-equation" id="duckEquation">Tap Start, then tap any duck to choose a problem.</div>
+<div class="duck-answer-row">
+<input id="duckInput" inputmode="numeric" placeholder="Answer" disabled />
+<button id="duckSubmit" class="secondary" disabled>Answer duck</button>
+</div>
+</div>
+<div class="actions">
+<button id="duckStart" class="primary">Start Duck Dash</button>
+</div>
+<p id="duckStatus" class="msg" role="status">Tap Start when you’re ready.</p>
+</section>
 
-              <button id="serveBtn" class="serve-button">Serve order <span>→</span></button>
+<section id="shop" class="panel hidden">
+<section class="card mode-card">
+<div class="mode-header">
+<div>
+<div class="section-kicker">SPEND YOUR COINS</div>
+<h2>🛍 Coin shop</h2>
+<p>The shop is open from the start. Special chicken looks can still have their own level requirements.</p>
+</div>
+<div class="mode-badge coin-mode"><span id="shopCoinCount">0</span> 🪙</div>
+</div>
+<div id="shopItems" class="shop-grid"></div>
+</section>
+</section>
 
-              <div class="order-tools">
-                <button id="hintBtn" class="secondary">💡 Use hint <span id="hintCountInline"></span></button>
-                <button id="skipBtn" class="ghost">Skip this order</button>
-              </div>
-              <p class="tiny-note">Start with 1 free hint. When you run out, the hint button takes you straight to the Hint Game.</p>
-              <div id="feedback" class="feedback" role="status"></div>
-            </div>
-          </section>
-        </div>
-      </section>
+<section id="leaderboard" class="panel hidden">
+<section class="card mode-card">
+<div class="mode-header">
+<div>
+<div class="section-kicker">FAMILY & FRIENDS</div>
+<h2>🏆 Leaderboards</h2>
+<p>Higher unlocked levels rank first because the questions get harder, then score breaks the tie.</p>
+</div>
+</div>
+<div class="board-toggle">
+<button id="rushBoardBtn" class="active">⚡ Rush</button>
+<button id="duckBoardBtn" class="secondary">💡 Hint scores</button>
+</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>#</th><th>Player</th><th>Level</th><th>Score</th><th>Correct</th></tr></thead>
+<tbody id="boardBody"></tbody>
+</table>
+</div>
+</section>
+</section>
 
-      <section id="rush" class="panel card mode-card hidden">
-        <div class="mode-header">
-          <div>
-            <div class="section-kicker">SPEED ROUND</div>
-            <h2>⚡ 60-second rush</h2>
-            <p>Answer as many as you can. +1 correct · −1 incorrect. The math gets harder as your level rises.</p>
-          </div>
-          <div class="mode-badge">60 SEC</div>
-        </div>
-        <div class="rush-scorebar">
-          <div><span>TIME</span><strong id="rushTime">60s</strong></div>
-          <div><span>SCORE</span><strong id="rushScore">0</strong></div>
-        </div>
-        <div class="mode-question">
-          <div class="equation" id="rushEquation">Press start</div>
-          <input id="rushInput" inputmode="numeric" placeholder="Answer" disabled />
-        </div>
-        <div class="actions">
-          <button id="rushStart" class="primary">Start rush</button>
-          <button id="rushSubmit" class="secondary" disabled>Submit answer</button>
-        </div>
-        <p id="rushMsg" class="msg" role="status"></p>
-      </section>
+<section class="account-bar">
+<div>
+<strong id="playerLabel"></strong>
+<span id="hintLabel"></span>
+</div>
+<button id="logoutBtn" class="ghost">Log out</button>
+</section>
+</section>
+</main>
 
-      <section id="duck" class="panel card mode-card hidden">
-        <div class="mode-header">
-          <div>
-            <div class="section-kicker">EARN A HINT · CARNIVAL GAME</div>
-            <h2>🦆 Duck Dash</h2>
-            <p id="duckIntro">Reach 20 points in 60 seconds. Higher rows are faster, harder, and worth more.</p>
-          </div>
-          <div class="mode-badge hint-badge">HINT +1</div>
-        </div>
+<!-- ===== order ticket: opens when a building is tapped ===== -->
+<div id="orderTicketHost" role="dialog" aria-modal="true" aria-labelledby="orderPrompt">
+<section class="card order-card">
+<div class="town-ticket-who">
+<div class="em" id="ticketIcon" aria-hidden="true">🏠</div>
+<div>
+<div id="orderCounter" class="section-kicker">ORDER 1 OF 10</div>
+<div class="no-timer">NO TIMER</div>
+</div>
+<button type="button" class="town-ticket-close" id="townTicketClose" aria-label="Back to the map">✕</button>
+</div>
 
-        <div class="rush-scorebar duck-scorebar">
-          <div><span>TIME</span><strong id="duckTime">60s</strong></div>
-          <div><span>POINTS</span><strong id="duckScore">0</strong></div>
-          <div><span>GOAL</span><strong id="duckGoal">20</strong></div>
-        </div>
+<div class="order-content">
+<h2 id="orderPrompt">Pack the chicken!</h2>
+<p id="orderStory" class="order-story">2 boxes. 3 pieces in each box.</p>
+<div class="equation" id="equation">2 × 3 = ?</div>
+<p id="orderQuestion" class="muted">How many pieces altogether?</p>
 
-        <div id="duckCarnival" class="duck-carnival" aria-label="Three moving duck rows">
-          <div class="duck-lane lane-3">
-            <div class="duck-lane-label"><strong>3 PTS</strong><span>Hardest · fastest →</span><b id="duckRow3Question" class="lane-question">?</b></div>
-            <div id="duckLane3" class="duck-lane-playfield"></div>
-          </div>
-          <div class="duck-lane lane-2">
-            <div class="duck-lane-label"><strong>2 PTS</strong><span>Medium · ←</span><b id="duckRow2Question" class="lane-question">?</b></div>
-            <div id="duckLane2" class="duck-lane-playfield"></div>
-          </div>
-          <div class="duck-lane lane-1">
-            <div class="duck-lane-label"><strong>1 PT</strong><span>Easiest · slowest →</span><b id="duckRow1Question" class="lane-question">?</b></div>
-            <div id="duckLane1" class="duck-lane-playfield"></div>
-          </div>
-        </div>
+<div class="answer-row">
+<span class="answer-label">YOUR ANSWER</span>
+<input id="answerInput" readonly inputmode="none" aria-label="Answer" placeholder="?" />
+</div>
 
-        <div class="duck-answer-panel compact">
-          <div class="equation duck-equation" id="duckEquation">Tap Start, then tap the duck carrying the correct answer.</div>
-          <div class="tiny-note duck-help">One tap = one answer. The ducks keep moving the whole time.</div>
-        </div>
+<div id="numberPad" class="number-pad" aria-label="Number pad">
+<button type="button" data-number="1">1</button>
+<button type="button" data-number="2">2</button>
+<button type="button" data-number="3">3</button>
+<button type="button" data-number="4">4</button>
+<button type="button" data-number="5">5</button>
+<button type="button" data-number="6">6</button>
+<button type="button" data-number="7">7</button>
+<button type="button" data-number="8">8</button>
+<button type="button" data-number="9">9</button>
+<button type="button" class="pad-action" id="clearAnswer">Clear</button>
+<button type="button" data-number="0">0</button>
+<button type="button" class="pad-action" id="deleteAnswer">⌫</button>
+</div>
 
-        <div class="actions">
-          <button id="duckStart" class="primary">Start Duck Dash</button>
-        </div>
-        <p id="duckStatus" class="msg" role="status">Tap Start when you’re ready.</p>
-      </section>
+<button id="serveBtn" class="serve-button">Serve order <span>→</span></button>
 
-      <section id="shop" class="panel hidden">
-        <section class="card mode-card">
-          <div class="mode-header">
-            <div>
-              <div class="section-kicker">SPEND YOUR COINS</div>
-              <h2>🛍 Coin shop</h2>
-              <p>The shop is open from the start. Special chicken looks can still have their own level requirements.</p>
-            </div>
-            <div class="mode-badge coin-mode"><span id="shopCoinCount">0</span> 🪙</div>
-          </div>
-          <div id="shopItems" class="shop-grid"></div>
-        </section>
-      </section>
+<div class="order-tools">
+<button id="hintBtn" class="secondary">💡 Use hint <span id="hintCountInline"></span></button>
+<button id="skipBtn" class="ghost">Back to the map</button>
+</div>
 
-      <section id="leaderboard" class="panel hidden">
-        <section class="card mode-card">
-          <div class="mode-header">
-            <div>
-              <div class="section-kicker">FAMILY & FRIENDS</div>
-              <h2>🏆 Leaderboards</h2>
-              <p>Higher unlocked levels rank first because the questions get harder, then score breaks the tie.</p>
-            </div>
-          </div>
-          <div class="board-toggle">
-            <button id="rushBoardBtn" class="active">⚡ Rush</button>
-            <button id="duckBoardBtn" class="secondary">💡 Hint scores</button>
-          </div>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>#</th><th>Player</th><th>Level</th><th>Score</th><th>Correct</th></tr></thead>
-              <tbody id="boardBody"></tbody>
-            </table>
-          </div>
-        </section>
-      </section>
+<p class="tiny-note">Start with 1 free hint. When you run out, the hint button takes you straight to the Hint Game.</p>
+<div id="feedback" class="feedback" role="status"></div>
+</div>
+</section>
+</div>
 
-      <section class="account-bar">
-        <div>
-          <strong id="playerLabel"></strong>
-          <span id="hintLabel"></span>
-        </div>
-        <button id="logoutBtn" class="ghost">Log out</button>
-      </section>
-    </section>
-  </main>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=20260920-2315"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="town.js?v=20260920-2300"></script>
+<script src="app.js?v=20260920-2300"></script>
 </body>
 </html>
