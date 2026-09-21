@@ -5,6 +5,30 @@
    ========================================================== */
 
 .town-col{display:grid;gap:14px;align-content:start;min-width:0}
+/* Weather effects never cover labels, buildings or delivery controls. */
+.town-weather-info{font-size:11px;line-height:1.5;color:#645342;padding:6px 2px}
+.town-weather-info a{color:inherit}
+.town-weather-fx{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:.35}
+.town-map[data-weather="cloudy"] .town-world,.town-map[data-weather="fog"] .town-world{background:#b6c8ad}
+.town-map:is([data-weather="rain"],[data-weather="storm"]) .town-world{background:#aac4a6}
+.town-map:is([data-weather="rain"],[data-weather="storm"]) .town-weather-fx{
+  background-image:repeating-linear-gradient(110deg,transparent 0 26px,#e0f4ff 27px 28px,transparent 29px 54px);
+  background-size:54px 22px;mask-image:repeating-linear-gradient(0deg,#000 0 9px,transparent 10px 24px);
+  animation:townRain 1.2s linear infinite}
+.town-map[data-weather="snow"] .town-world{background:#e2eadd}
+.town-map[data-weather="snow"] .town-weather-fx{opacity:.8;
+  background-image:radial-gradient(circle,#fff 0 2px,transparent 3px),radial-gradient(circle,#fff 0 1px,transparent 2px);
+  background-size:49px 61px,79px 83px;animation:townSnow 12s linear infinite}
+.town-map[data-weather="snow"] .tb-roof::before{background:linear-gradient(#fff 0 24%,var(--roof) 26%)}
+.town-map[data-weather="fog"] .town-weather-fx{background:linear-gradient(transparent,#fff8 45%,transparent)}
+.town-map[data-light="night"] .town-world{background:#536b65}
+.town-map[data-light="night"] .tb-road{background:#494448}
+.town-map[data-light="night"] .tb-body{background:#e9dfc8}
+.town-map[data-light="night"] .shop-front i,.town-map[data-light="night"] .shop-upper-floor i{background:#ffe69a;box-shadow:0 0 .6em #ffe69a}
+.town-map[data-light="night"] .tb-door{background:#ffd879;box-shadow:0 0 .5em #ffd87988}
+@keyframes townRain{to{background-position:-54px 44px}}
+@keyframes townSnow{to{background-position:49px 122px,-79px 166px}}
+@media(prefers-reduced-motion:reduce){.town-weather-fx{animation:none!important}}
 
 .town-card{
   background:#FFFDF7;

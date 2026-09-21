@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="Crispy Math Café" />
 <title>Crispy Math Café</title>
 <link rel="stylesheet" href="styles.css?v=20260921-beak-shading" />
-<link rel="stylesheet" href="town.css?v=20260921-road-layers" />
+<link rel="stylesheet" href="town.css?v=20260921-chicago-weather" />
 </head>
 <body>
 <div class="page-pattern" aria-hidden="true"></div>
@@ -149,6 +149,7 @@
 <div class="town-map" id="townMap">
 <div class="town-world" id="townWorld" style="--town-zoom:1.1">
 <div class="town-terrain" id="townTerrain"></div>
+<div class="town-weather-fx" aria-hidden="true"></div>
 
 <div class="tb-road h" style="top:35.5%"></div>
 <div class="tb-road h" style="top:61.5%"></div>
@@ -177,6 +178,7 @@
 <div class="town-toast" id="townToast"></div>
 <div class="town-banner" id="townBanner"></div>
 </div>
+<div class="town-weather-info"><span id="townWeatherLabel">Chicago weather</span> · <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Weather by Open-Meteo</a></div>
 
 <p class="town-legend">Orders ring in on their own. Tap the building with the 🍗 bubble to take it.</p>
 <div class="town-waiting" id="townWaiting"></div>
@@ -376,6 +378,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="town.js?v=20260921-map-fix"></script>
+<script src="weather.js?v=20260921-chicago-weather"></script>
 <script src="app.js?v=20260921-long-slim-arms"></script>
 </body>
 </html>
