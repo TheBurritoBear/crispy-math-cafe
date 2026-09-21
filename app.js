@@ -6,7 +6,7 @@ let sessionToken=localStorage.getItem('cmc_session')||'';
 let player=null;
 let currentQ=null;
 let rush={timer:null,time:60,score:0,correct:0,incorrect:0,q:null,active:false};
-let duck={timer:null,time:30,score:0,correct:0,incorrect:0,target:5,q:null,active:false};
+let duck={timer:null,time:60,score:0,correct:0,incorrect:0,target:20,active:false,selected:null,rowStats:{1:0,2:0,3:0}};
 
 const $=id=>document.getElementById(id);
 
@@ -31,7 +31,7 @@ function maxFactorForLevel(level){
   return Math.min(50,20+(level-5)*5);
 }
 function levelGoal(level){ return level<=3?10:10+(level-3)*5; }
-function duckGoalForLevel(level){ return 5+Math.min(7,Math.floor((level-2)/2)); }
+function duckGoalForLevel(){ return 20; }
 
 function makeQ(level,harder=false){
   let max=maxFactorForLevel(level);
@@ -59,14 +59,6 @@ function displayStyleName(id){
   if(id==='halloween_chicken') return 'Halloween chicken';
   return sauces.find(s=>s.id===id)?.name||'Plain';
 }
-function chickenEmoji(id){
-  if(id==='halloween_chicken') return '🎃';
-  if(id==='firecracker') return '🐔💥';
-  if(id==='gochujang') return '🐔🔥';
-  if(id==='golden_garlic') return '🐔✨';
-  return '🐔';
-}
-
 async function createPlayer(){
   const name=$('playerName').value.trim(),code=$('saveCode').value.trim();
   $('authMsg').textContent='Creating your shop…';
@@ -121,11 +113,11 @@ function openHintGame(){
 }
 function updateUnlockUI(){
   $('duckStart').disabled=duck.active;
-  $('duckIntro').textContent='Beat the goal before time runs out to earn +1 hint. Difficulty scales with your level.';
+  $('duckIntro').textContent='Carnival Duck Dash: tap a moving duck, solve its addition or subtraction problem, and reach 20 points in 60 seconds. Top row = 3 points, middle = 2, bottom = 1. Wrong answers cost 1 point.';
   if(!duck.active){
-    $('duckEquation').textContent='Ready';
+    $('duckEquation').textContent='Tap Start, then tap any duck to choose a problem.';
   }
-  $('duckGoal').textContent=duckGoalForLevel(player.current_level);
+  $('duckGoal').textContent=20;
 }
 function updateUI(){
   const goal=levelGoal(player.current_level);
@@ -140,7 +132,7 @@ function updateUI(){
     $('hintBtn').textContent='🎯 Earn a hint →';
   }
   $('storeTitle').textContent=player.store_name||'My Chicken Shop';
-  $('storeNameEditor').classList.toggle('hidden',player.current_level<2);
+  $('storeNameEditor').classList.remove('hidden');
   $('storeNameInput').value=player.store_name||'';
   $('progressText').textContent=`${player.level_correct} / ${goal} correct to complete this level`;
   $('progressFill').style.width=Math.min(100,(player.level_correct/goal)*100)+'%';
@@ -259,7 +251,6 @@ async function useHint(){
   await savePlayer({hints:player.hints-1});
 }
 async function saveStoreName(){
-  if(player.current_level<2)return;
   const name=$('storeNameInput').value.trim();
   if(!name)return;
   try{
@@ -336,69 +327,190 @@ function renderRush(){
   $('rushScore').textContent=rush.score;
 }
 
+function duckProblemForRow(row){
+  const level=Math.max(1,player?.current_level||1);
+  const maxByRow={
+    1:Math.min(30,10+level*2),
+    2:Math.min(60,20+level*4),
+    3:Math.min(100,30+level*7)
+  };
+  const max=maxByRow[row]||20;
+  const isSubtract=Math.random()<0.45;
+  if(isSubtract){
+    const a=2+Math.floor(Math.random()*(max-1));
+    const b=1+Math.floor(Math.random()*a);
+    return {a,b,op:'−',answer:a-b,row,points:row};
+  }
+  const a=1+Math.floor(Math.random()*Math.max(2,Math.floor(max*.65)));
+  const b=1+Math.floor(Math.random()*Math.max(2,Math.floor(max*.65)));
+  return {a,b,op:'+',answer:a+b,row,points:row};
+}
+function duckProblemText(q){ return `${q.a} ${q.op} ${q.b}`; }
+function chickenPreviewMarkup(style='plain',mini=false){
+  return `<div class="chicken-avatar ${mini?'mini-chicken':''}" data-style="${escapeHtml(style||'plain')}" aria-hidden="true">
+    <div class="chef-hat"><span></span><span></span><span></span></div>
+    <div class="chicken-body">
+      <div class="comb"></div>
+      <div class="eye eye-left"></div>
+      <div class="eye eye-right"></div>
+      <div class="beak"></div>
+      <div class="wattle"></div>
+      <div class="wing wing-left"></div>
+      <div class="wing wing-right"></div>
+      <div class="tail"></div>
+      <div class="legs"><span></span><span></span></div>
+    </div>
+  </div>`;
+}
+function buildDuckTarget(row,index,count=4){
+  const q=duckProblemForRow(row);
+  const speed={1:12,2:9,3:6.5}[row];
+  const direction=row===2?'rtl':'ltr';
+  const btn=document.createElement('button');
+  btn.type='button';
+  btn.className=`duck-target row-${row} ${direction}`;
+  btn.dataset.row=row;
+  btn.dataset.answer=q.answer;
+  btn.dataset.a=q.a;
+  btn.dataset.b=q.b;
+  btn.dataset.op=q.op;
+  btn.dataset.points=row;
+  btn.style.setProperty('--duck-speed',speed+'s');
+  btn.style.setProperty('--duck-delay',(-index*(speed/count))+'s');
+  btn.innerHTML=`<span class="duck-icon">🦆</span><span class="duck-problem">${duckProblemText(q)}</span><span class="duck-points">+${row}</span>`;
+  btn.onclick=()=>selectDuckTarget(btn);
+  btn.addEventListener('animationiteration',()=>{
+    if(!duck.active||duck.selected?.el===btn)return;
+    refreshDuckTarget(btn);
+  });
+  return btn;
+}
+function refreshDuckTarget(btn){
+  const row=Number(btn.dataset.row)||1;
+  const q=duckProblemForRow(row);
+  btn.dataset.answer=q.answer;
+  btn.dataset.a=q.a;
+  btn.dataset.b=q.b;
+  btn.dataset.op=q.op;
+  const problem=btn.querySelector('.duck-problem');
+  if(problem) problem.textContent=duckProblemText(q);
+}
+function populateDuckLanes(){
+  [3,2,1].forEach(row=>{
+    const lane=$('duckLane'+row);
+    lane.innerHTML='';
+    for(let i=0;i<4;i++) lane.appendChild(buildDuckTarget(row,i,4));
+  });
+}
+function selectDuckTarget(btn){
+  if(!duck.active)return;
+  if(duck.selected?.el) duck.selected.el.classList.remove('selected');
+  document.querySelectorAll('.duck-target').forEach(d=>d.style.animationPlayState='running');
+  btn.classList.add('selected');
+  btn.style.animationPlayState='paused';
+  duck.selected={
+    el:btn,
+    row:Number(btn.dataset.row),
+    points:Number(btn.dataset.points),
+    answer:Number(btn.dataset.answer),
+    text:`${btn.dataset.a} ${btn.dataset.op} ${btn.dataset.b}`
+  };
+  $('duckEquation').textContent=duck.selected.text+' = ?';
+  $('duckInput').value='';
+  $('duckInput').disabled=false;
+  $('duckSubmit').disabled=false;
+  $('duckInput').focus();
+}
 function startDuck(){
   clearInterval(duck.timer);
   duck={
-    timer:null,time:30,score:0,correct:0,incorrect:0,
-    target:duckGoalForLevel(player.current_level),q:null,active:true
+    timer:null,time:60,score:0,correct:0,incorrect:0,target:20,
+    active:true,selected:null,rowStats:{1:0,2:0,3:0}
   };
-  $('duckInput').disabled=false;
-  $('duckSubmit').disabled=false;
+  $('duckInput').value='';
+  $('duckInput').disabled=true;
+  $('duckSubmit').disabled=true;
   $('duckStart').disabled=true;
-  $('duckGoal').textContent=duck.target;
-  $('duckStatus').textContent='Go! Reach the goal before time runs out.';
-  duckNext();renderDuck();$('duckInput').focus();
+  $('duckTime').textContent='60s';
+  $('duckScore').textContent='0';
+  $('duckGoal').textContent='20';
+  $('duckEquation').textContent='Tap a duck to choose a problem.';
+  $('duckStatus').textContent='Go! Higher rows move faster and pay more points.';
+  populateDuckLanes();
+  renderDuck();
   duck.timer=setInterval(async()=>{
     duck.time--;
     renderDuck();
-    if(duck.time<=0)await finishDuck(false);
+    if(duck.time<=0) await finishDuck(false);
   },1000);
 }
-function duckNext(){
-  duck.q=makeQ(player.current_level,true);
-  $('duckEquation').textContent=`${duck.q.a} × ${duck.q.b} = ?`;
-  $('duckInput').value='';
-}
 async function duckAnswer(){
-  if(!duck.active)return;
-  const val=Number($('duckInput').value);
+  if(!duck.active||!duck.selected)return;
+  const raw=$('duckInput').value.trim();
+  if(raw==='')return;
+  const val=Number(raw);
   if(!Number.isFinite(val))return;
-  if(val===duck.q.answer){duck.correct++;duck.score+=2;}
-  else{duck.incorrect++;duck.score=Math.max(0,duck.score-1);}
+
+  const target=duck.selected;
+  const correct=val===target.answer;
+  if(correct){
+    duck.correct++;
+    duck.score+=target.points;
+    duck.rowStats[target.row]++;
+    $('duckStatus').textContent=`Nice shot! +${target.points} point${target.points===1?'':'s'}.`;
+  }else{
+    duck.incorrect++;
+    duck.score=Math.max(0,duck.score-1);
+    $('duckStatus').textContent=`Miss! ${target.text} = ${target.answer}. −1 point.`;
+  }
+
+  target.el.classList.remove('selected');
+  target.el.style.animationPlayState='running';
+  refreshDuckTarget(target.el);
+  duck.selected=null;
+  $('duckEquation').textContent='Tap another duck.';
+  $('duckInput').value='';
+  $('duckInput').disabled=true;
+  $('duckSubmit').disabled=true;
   renderDuck();
-  if(duck.correct>=duck.target)await finishDuck(true);
-  else{duckNext();$('duckInput').focus();}
+
+  if(duck.score>=duck.target) await finishDuck(true);
 }
 async function finishDuck(success){
   clearInterval(duck.timer);
   if(!duck.active)return;
   duck.active=false;
+  if(duck.selected?.el){
+    duck.selected.el.classList.remove('selected');
+    duck.selected.el.style.animationPlayState='running';
+  }
+  document.querySelectorAll('.duck-target').forEach(d=>d.style.animationPlayState='paused');
   $('duckInput').disabled=true;
   $('duckSubmit').disabled=true;
   $('duckStart').disabled=false;
-  const finalScore=duck.score+(success?duck.time:0);
+  const elapsed=Math.max(1,60-duck.time);
   try{
     await rpc('submit_score',{
       p_session_token:sessionToken,p_mode:'duck_dash',p_level:player.current_level,
-      p_score:finalScore,p_correct:duck.correct,p_incorrect:duck.incorrect,
-      p_duration_seconds:30-duck.time,
-      p_metadata:{earned_hint:success,target:duck.target,time_left:duck.time}
+      p_score:duck.score,p_correct:duck.correct,p_incorrect:duck.incorrect,
+      p_duration_seconds:elapsed,
+      p_metadata:{earned_hint:success,target:20,time_left:duck.time,row_stats:duck.rowStats}
     });
   }catch(e){}
   if(success){
     await savePlayer({hints:player.hints+1});
-    $('duckStatus').textContent=`Hint earned! 🎉 Final score ${finalScore}. Returning to your order…`;
-    setTimeout(()=>showPanel('orders'),900);
+    $('duckStatus').textContent=`20 points! Hint earned 🎉 Returning to your order…`;
+    setTimeout(()=>showPanel('orders'),1100);
   }else{
-    $('duckStatus').textContent=`Time! You got ${duck.correct}/${duck.target}. Try again for the hint.`;
+    $('duckStatus').textContent=`Time! You scored ${duck.score}/20. Tap Start to try again.`;
   }
-  $('duckScore').textContent=finalScore;
 }
 function renderDuck(){
   $('duckTime').textContent=duck.time+'s';
   $('duckScore').textContent=duck.score;
-  $('duckGoal').textContent=duck.target;
+  $('duckGoal').textContent=20;
 }
+
 
 async function renderShop(){
   $('shopCoinCount').textContent=player.coins;
@@ -416,7 +528,7 @@ async function renderShop(){
         button=`<button data-buy="${i.id}" ${locked?'disabled':''}>${label}</button>`;
       }
       return `<div class="shopItem">
-        <div class="preview">${i.id==='halloween_chicken'?'🎃🐔':'🐔'}</div>
+        <div class="preview chicken-shop-preview">${chickenPreviewMarkup(i.id,true)}</div>
         <div>
           <strong>${i.display_name}</strong>
           <div class="shop-meta">${i.description||''}</div>
