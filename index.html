@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="Crispy Math Café" />
 <title>Crispy Math Café</title>
 <link rel="stylesheet" href="styles.css?v=20260921-rubber-ducks" />
-<link rel="stylesheet" href="town.css?v=20260921-wardrobe-ducks" />
+<link rel="stylesheet" href="town.css?v=20260921-shop-name" />
 </head>
 <body>
 <div class="page-pattern" aria-hidden="true"></div>
@@ -107,9 +107,10 @@
 <div id="storeNameEditor" class="store-name-editor hidden">
 <div class="store-name-label">NAME YOUR STORE</div>
 <div class="store-name-row">
-<input id="storeNameInput" maxlength="30" placeholder="My Chicken Shop" />
+<input id="storeNameInput" maxlength="18" placeholder="My Chicken Shop" aria-describedby="storeNameHelp" />
 <button id="saveStoreName" type="button">Save</button>
 </div>
+<small id="storeNameHelp" class="muted">Up to 18 characters · also shown on your map</small>
 </div>
 <div class="shop-copy" id="shopCopy">Let’s fill ten orders, at your own pace.</div>
 <div class="shop-stats">
@@ -159,11 +160,11 @@
 <div class="tb-road v" style="left:18%"></div>
 <div class="tb-road v" style="left:79%"></div>
 
-<div class="tb-shop" aria-hidden="true">
+<div class="tb-shop">
 <span class="tb-roof"></span>
 <span class="tb-body">
-<span class="tb-icon">🐔</span>
-<span class="tb-name">MY SHOP</span>
+<span class="tb-icon" aria-hidden="true">🐔</span>
+<span class="tb-name" id="townShopName">My Chicken Shop</span>
 </span>
 </div>
 
@@ -355,6 +356,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="town.js?v=20260921-wardrobe-ducks"></script>
-<script src="app.js?v=20260921-mixed-hint-math"></script>
+<script src="app.js?v=20260921-shop-name"></script>
 </body>
 </html>

@@ -160,6 +160,8 @@ function updateUI(){
     $('hintBtn').textContent='🦆 Earn a hint';
   }
   $('storeTitle').textContent=player.store_name||'My Chicken Shop';
+  $('townShopName').textContent=player.store_name||'My Chicken Shop';
+  $('townShopName').title=player.store_name||'My Chicken Shop';
   $('storeNameEditor').classList.remove('hidden');
   $('storeNameInput').value=player.store_name||'';
   $('progressText').textContent=`${player.level_correct} / ${goal} correct to complete this level`;
@@ -315,6 +317,12 @@ async function useHint(){
 async function saveStoreName(){
   const name=$('storeNameInput').value.trim();
   if(!name)return;
+  if(name.length>18){
+    $('storeNameInput').setCustomValidity('Use 18 characters or fewer so your name fits on the map.');
+    $('storeNameInput').reportValidity();
+    return;
+  }
+  $('storeNameInput').setCustomValidity('');
   try{
     await savePlayer({store_name:name});
     $('storeNameInput').blur();
@@ -739,6 +747,7 @@ $('deleteAnswer').onclick=deleteAnswer;
 $('skipBtn').onclick=skipOrder;
 $('saveStoreName').onclick=saveStoreName;
 $('storeNameInput').addEventListener('keydown',e=>{if(e.key==='Enter')saveStoreName();});
+$('storeNameInput').addEventListener('input',()=>$('storeNameInput').setCustomValidity(''));
 $('createBtn').onclick=createPlayer;
 $('loginBtn').onclick=login;
 $('serveBtn').onclick=serveOrder;
