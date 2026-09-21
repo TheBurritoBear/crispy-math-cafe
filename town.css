@@ -94,8 +94,12 @@
 }
 .tb-bldg.is-new{animation:townSprout .65s cubic-bezier(.2,1.5,.4,1) both}
 @keyframes townSprout{from{transform:translate(-50%,-20%) scale(.2);opacity:0}}
-.tb-roof{display:block;height:1.55em;background:var(--roof);
-  border:.16em solid #2A1A11;border-bottom:0;clip-path:polygon(16% 0,84% 0,100% 100%,0 100%)}
+/* roof = dark outline layer + colored inner layer (no border, so clip-path
+   can't leave dark wedges at the corners) */
+.tb-roof{position:relative;display:block;height:1.55em;background:#2A1A11;
+  --roof-shape:polygon(16% 0,84% 0,100% 100%,0 100%);clip-path:var(--roof-shape)}
+.tb-roof::before{content:"";position:absolute;inset:.16em .2em 0;
+  background:var(--roof);clip-path:var(--roof-shape)}
 .tb-body{position:relative;display:block;background:#FFFDF7;border:.16em solid #2A1A11;
   border-radius:0 0 .55em .55em;padding:.3em .2em .75em;box-shadow:0 .2em 0 #2A1A11}
 .tb-icon{display:block;font-size:1.55em;line-height:1.15}
@@ -136,7 +140,7 @@
 /* your shop in the middle */
 .tb-shop{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
   width:13%;z-index:5;text-align:center;font-size:2.05cqi;pointer-events:none}
-.tb-shop .tb-roof{background:#8F1D14;clip-path:polygon(10% 0,90% 0,100% 100%,0 100%);height:1.5em}
+.tb-shop .tb-roof{--roof:#8F1D14;--roof-shape:polygon(10% 0,90% 0,100% 100%,0 100%);height:1.5em}
 .tb-shop .tb-body{background:#FFE9A8;box-shadow:0 .22em 0 #2A1A11;padding:.3em .2em .4em}
 .tb-shop .tb-icon{font-size:1.7em}
 .tb-shop .tb-name{font-size:.8em;color:#8F1D14}
