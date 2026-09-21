@@ -839,85 +839,92 @@ body.level-up .topbar{
   text-align:center;
   font-size:.84rem;
 }
-.pumpkin-suit{
-  display:none;
-  position:absolute;
-  left:50%;
-  top:43px;
-  transform:translateX(-50%);
-  width:110px;
-  height:66px;
-  z-index:2;
-  border:3px solid var(--ink);
-  border-radius:44% 44% 48% 48%;
-  background:
-    radial-gradient(ellipse at 25% 50%,rgba(255,196,82,.28) 0 28%,transparent 30%),
-    radial-gradient(ellipse at 75% 50%,rgba(120,54,0,.12) 0 28%,transparent 30%),
-    linear-gradient(90deg,#e87918 0 16%,#f69a22 16% 33%,#e87918 33% 50%,#f69a22 50% 67%,#e87918 67% 84%,#f69a22 84% 100%);
-  box-shadow:inset 0 -5px 0 rgba(109,49,0,.14);
-}
-.pumpkin-suit:before{
-  content:"";
-  position:absolute;
-  top:-5px;
-  left:50%;
-  width:46px;
-  height:12px;
-  transform:translateX(-50%);
-  background:#3c7a35;
-  border:2px solid var(--ink);
-  border-radius:50%;
-}
-.pumpkin-eye,.pumpkin-nose,.pumpkin-mouth{
-  position:absolute;
-  display:block;
-  background:#2b1b17;
-  z-index:3;
-}
-.pumpkin-eye{
-  top:16px;
-  width:13px;
-  height:11px;
-  clip-path:polygon(50% 0,100% 100%,0 100%);
-}
-.pumpkin-eye-left{left:27px}
-.pumpkin-eye-right{right:27px}
-.pumpkin-nose{
-  top:29px;
-  left:50%;
-  transform:translateX(-50%);
-  width:8px;
-  height:8px;
-  clip-path:polygon(50% 0,100% 100%,0 100%);
-}
-.pumpkin-mouth{
-  left:27px;
-  right:27px;
-  bottom:9px;
-  height:9px;
-  clip-path:polygon(0 0,15% 40%,30% 0,45% 45%,60% 0,75% 40%,100% 0,90% 100%,72% 70%,58% 100%,43% 68%,28% 100%,12% 72%);
+/* The Halloween torso IS the pumpkin suit. A separate feathered head
+   emerges from its collar; there is no pumpkin held in front of the body. */
+.pumpkin-suit{display:none}
+.chicken-avatar[data-style="halloween_chicken"]{
+  width:118px;
+  flex-basis:118px;
+  height:190px;
+  padding-bottom:32px;
+  background:transparent;
 }
 .chicken-avatar[data-style="halloween_chicken"] .chicken-body{
-  background:#fff8ea!important;
+  transform:none;
+  width:94px;
+  height:84px;
+  border-radius:43% 43% 48% 48%;
+  background:
+    radial-gradient(ellipse at 50% 35%,#ffc34f 0,transparent 58%),
+    repeating-linear-gradient(90deg,#f69523 0 15px,#de6a12 16px 19px,#f69523 20px 33px)!important;
+  box-shadow:inset 0 -7px 0 #ce5e1640,3px 4px 0 var(--ink);
 }
-.chicken-avatar[data-style="halloween_chicken"] .chef-hat:after,
-.chicken-avatar[data-style="halloween_chicken"] .chef-hat span{
-  background:#fff!important;
+/* White head above the neckline, not a full white body behind a prop. */
+.chicken-avatar[data-style="halloween_chicken"] .chicken-body::before{
+  content:"";
+  position:absolute;
+  width:60px;
+  height:60px;
+  top:-47px;
+  left:50%;
+  transform:translateX(-50%);
+  border:3px solid var(--ink);
+  border-radius:48% 48% 43% 43%;
+  background:#fff8ea;
+  z-index:3;
 }
+.chicken-avatar[data-style="halloween_chicken"] .eye{top:-27px;z-index:5}
+.chicken-avatar[data-style="halloween_chicken"] .eye-left{left:29px}
+.chicken-avatar[data-style="halloween_chicken"] .eye-right{right:29px}
+.chicken-avatar[data-style="halloween_chicken"] .beak{top:-16px;z-index:5}
+.chicken-avatar[data-style="halloween_chicken"] .wattle{top:-4px;height:11px;z-index:5}
+.chicken-avatar[data-style="halloween_chicken"] .comb{top:-52px;left:30px;z-index:4}
+/* A jaunty pumpkin lid and curled leaf replace the chef's hat. */
+.chicken-avatar[data-style="halloween_chicken"] .chef-hat{
+  top:14px;width:48px;height:18px;
+  transform:translateX(-50%) rotate(-12deg);
+  border:3px solid var(--ink);border-radius:50%;
+  background:#f69523;z-index:6;
+}
+.chicken-avatar[data-style="halloween_chicken"] .chef-hat span{display:none}
+.chicken-avatar[data-style="halloween_chicken"] .chef-hat::after{
+  top:-13px;bottom:auto;left:20px;right:auto;width:9px;height:14px;
+  background:#48833b!important;border:2px solid var(--ink);border-radius:4px;
+  transform:rotate(12deg);
+}
+.chicken-avatar[data-style="halloween_chicken"] .chef-hat::before{
+  content:"";position:absolute;top:-8px;left:27px;width:19px;height:10px;
+  background:#72a846;border:2px solid var(--ink);border-radius:2px 90% 2px 90%;
+  transform:rotate(-20deg);
+}
+/* This layer is only the suit's collar and embroidered jack-o'-lantern face. */
 .chicken-avatar[data-style="halloween_chicken"] .pumpkin-suit{
-  display:block;
+  display:block;position:absolute;inset:0;z-index:2;
+  background:none;border:0;box-shadow:none;transform:none;
 }
+.pumpkin-suit::before{
+  content:"";position:absolute;top:-8px;left:50%;width:72px;height:20px;
+  transform:translateX(-50%);border:3px solid var(--ink);border-radius:50%;
+  background:#467d35;
+}
+.pumpkin-eye,.pumpkin-nose,.pumpkin-mouth{position:absolute;display:block;background:#422411}
+.pumpkin-eye{top:25px;width:15px;height:13px;clip-path:polygon(50% 0,100% 100%,0 100%)}
+.pumpkin-eye-left{left:17px;transform:rotate(-8deg)}
+.pumpkin-eye-right{right:17px;transform:rotate(8deg)}
+.pumpkin-nose{top:39px;left:50%;transform:translateX(-50%);width:9px;height:9px;clip-path:polygon(50% 0,100% 100%,0 100%)}
+.pumpkin-mouth{
+  left:18px;right:18px;bottom:12px;height:15px;
+  border-radius:0 0 50% 50%;
+  clip-path:polygon(0 0,22% 0,22% 33%,35% 33%,35% 0,65% 0,65% 33%,78% 33%,78% 0,100% 0,92% 78%,70% 100%,30% 100%,8% 78%);
+}
+/* Wings exit the sides of the outfit; neither wing holds its front. */
 .chicken-avatar[data-style="halloween_chicken"] .wing{
-  background:#f5dfba;
-  z-index:4;
-  top:40px;
+  top:18px;width:22px;height:34px;background:#fff8ea;z-index:1;
 }
-.chicken-avatar[data-style="halloween_chicken"] .wing-left{left:-23px;transform:rotate(30deg)}
-.chicken-avatar[data-style="halloween_chicken"] .wing-right{right:-23px;transform:rotate(-30deg)}
-.chicken-avatar[data-style="halloween_chicken"] .wattle{top:39px;height:11px;z-index:3}
-.chicken-avatar[data-style="halloween_chicken"] .legs{
-  z-index:1;
-}
+.chicken-avatar[data-style="halloween_chicken"] .wing-left{left:-22px;transform:rotate(48deg)}
+.chicken-avatar[data-style="halloween_chicken"] .wing-right{right:-22px;transform:rotate(-48deg)}
+.chicken-avatar[data-style="halloween_chicken"] .tail{top:25px}
+.chicken-avatar[data-style="halloween_chicken"] .legs{bottom:-27px;width:42px;z-index:-1}
 @media(max-width:900px){
   .duck-lane{
     grid-template-columns:128px minmax(0,1fr);
