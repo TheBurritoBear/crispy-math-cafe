@@ -150,7 +150,7 @@ async function duckAnswer(){
   if(duck.correct>=duck.target){
     duck.active=false; $('duckInput').disabled=true; $('duckSubmit').disabled=true; $('duckStart').disabled=false;
     await savePlayer({hints:player.hints+1});
-    try{ await rpc('submit_score',{p_session_token:sessionToken,p_mode:'duck_dash',p_level:player.current_level,p_score:duck.correct,p_correct:duck.correct,p_incorrect:0,p_duration_seconds:0,p_metadata:{earned_hint:true}}); }catch(e){}
+    try{ await rpc('submit_score',{p_session_token:sessionToken,p_mode:'duck_dash',p_level:player.current_level,p_score:duck.correct,p_correct:duck.correct,p_incorrect:0,p_duration_seconds:null,p_metadata:{earned_hint:true}}); }catch(e){}
     $('duckStatus').textContent='Hint earned! 🎉';
   }else{ renderDuck(); duckNext(); }
 }
