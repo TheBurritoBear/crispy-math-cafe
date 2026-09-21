@@ -469,7 +469,7 @@ body.level-up .topbar{
 }
 .chef-hat{
   position:absolute;
-  top:0;
+  top:8px;
   left:50%;
   transform:translateX(-50%);
   width:66px;
@@ -1016,15 +1016,18 @@ body.level-up .topbar{
 .chicken-avatar:is([data-costume="dress"],[data-costume="cowboy"],[data-costume="firefighter"]) .chef-hat span{display:none}
 
 /* Purple party dress, flared skirt, gold sash and matching hair bow. */
-.chicken-avatar[data-costume="dress"] .chicken-body{background:transparent;border-color:transparent;box-shadow:none}
-.chicken-avatar[data-costume="dress"] .costume-suit{
-  inset:-2px -8px -2px;
-  background:radial-gradient(circle,#fff7da 1.7px,transparent 2px) 0 0/14px 14px,#a56de2;
-  border:3px solid var(--ink);border-radius:22% 22% 12% 12%;
-  clip-path:polygon(26% 0,74% 0,80% 18%,72% 40%,100% 96%,82% 100%,18% 100%,0 96%,28% 40%,20% 18%);
+.chicken-avatar[data-costume="dress"] .chicken-body{
+  background:var(--feather);border-color:var(--ink);
+  border-radius:35% 35% 40% 40%;box-shadow:none;
 }
-.chicken-avatar[data-costume="dress"] .costume-belt{position:absolute;left:18%;right:18%;top:31px;height:9px;background:#ffd45a;border-block:2px solid var(--ink)}
-.chicken-avatar[data-costume="dress"] .costume-badge{position:absolute;left:39%;top:27px;width:22px;height:17px;background:#f6bff0;clip-path:polygon(0 0,50% 35%,100% 0,100% 100%,50% 65%,0 100%);z-index:1}
+.chicken-avatar[data-costume="dress"] .costume-suit{
+  inset:17px -8px -2px;
+  background:radial-gradient(circle,#fff7da 1.7px,transparent 2px) 0 0/14px 14px,#a56de2;
+  border:3px solid var(--ink);border-radius:35% 35% 16% 16%;
+}
+.chicken-avatar[data-costume="dress"] .wing{z-index:3}
+.chicken-avatar[data-costume="dress"] .costume-belt{position:absolute;left:8%;right:8%;top:17px;height:9px;background:#ffd45a;border-block:2px solid var(--ink)}
+.chicken-avatar[data-costume="dress"] .costume-badge{position:absolute;left:39%;top:13px;width:22px;height:17px;background:#f6bff0;clip-path:polygon(0 0,50% 35%,100% 0,100% 100%,50% 65%,0 100%);z-index:1}
 .chicken-avatar[data-costume="dress"] .chef-hat{top:22px;left:67%;width:34px;height:21px;transform:rotate(17deg);background:#a56de2;clip-path:polygon(0 0,50% 30%,100% 0,100% 100%,50% 70%,0 100%);z-index:6}
 .chicken-avatar[data-costume="dress"] .chef-hat::after{inset:5px 13px;height:auto;background:#ffd45a;border:0;border-radius:50%}
 
