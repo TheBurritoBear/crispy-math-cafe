@@ -161,14 +161,17 @@
 #orderTicketHost{
   position:fixed;inset:0;z-index:120;background:rgba(42,26,17,.55);
   display:none;align-items:center;justify-content:center;
-  padding:18px;
-  padding-top:calc(18px + env(safe-area-inset-top,0px));
-  padding-bottom:calc(18px + env(safe-area-inset-bottom,0px));
+  padding:12px;
+  padding-top:calc(12px + env(safe-area-inset-top,0px));
+  padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));
   overflow-y:auto;-webkit-overflow-scrolling:touch;
 }
 #orderTicketHost.open{display:flex}
 #orderTicketHost .order-card{
-  width:100%;max-width:440px;max-height:94vh;overflow-y:auto;
+  width:100%;max-width:480px;min-height:0;
+  max-height:calc(100vh - 24px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));
+  max-height:calc(100dvh - 24px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));
+  overflow-y:auto;overscroll-behavior:contain;
   animation:townRise .28s cubic-bezier(.2,1.2,.4,1);
 }
 @keyframes townRise{from{transform:translateY(18px);opacity:0}}
@@ -192,4 +195,35 @@
 /* iPad landscape: keep the map a comfortable square that fits the screen */
 @media (min-width:860px) and (orientation:landscape){
   .town-map{max-width:min(100%, 62vh);max-width:min(100%, 62dvh)}
+}
+
+/* Keep the complete order within the iPad's available viewport. */
+#orderTicketHost .order-card::after,
+#orderTicketHost .order-content::before{display:none}
+#orderTicketHost .town-ticket-who{margin:0;padding:10px 14px;border-bottom:2px solid var(--soft)}
+#orderTicketHost .town-ticket-who .em{width:40px;height:40px;font-size:22px}
+#orderTicketHost .town-ticket-close{width:44px;height:44px;padding:0;box-shadow:none}
+#orderTicketHost .order-content{padding:14px;display:grid;gap:12px}
+#orderTicketHost .order-content h2{font-size:clamp(1.3rem,3vw,1.7rem);line-height:1.15;margin:0 0 6px}
+#orderTicketHost .order-story{font-size:1rem;line-height:1.3}
+#orderTicketHost .equation{font-size:clamp(2rem,5vw,3.2rem);line-height:1.1;margin:12px 0;letter-spacing:-.03em;overflow-wrap:anywhere}
+#orderTicketHost #orderQuestion{font-size:.9rem;margin:6px 0}
+#orderTicketHost .answer-row{grid-template-columns:auto 1fr;margin:10px 0 0}
+#orderTicketHost .answer-label{border-right:3px solid var(--ink);border-bottom:0;padding:10px;font-size:.72rem}
+#orderTicketHost .answer-row input{min-width:0;padding:7px;font-size:1.5rem}
+#orderTicketHost .number-pad{gap:7px}
+#orderTicketHost #numberPad button{min-height:44px;padding:7px;font-size:1.2rem}
+#orderTicketHost #numberPad .pad-action{font-size:.9rem}
+#orderTicketHost #serveBtn{min-height:46px;padding:9px;margin-top:10px;font-size:1.05rem}
+#orderTicketHost .order-tools{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+#orderTicketHost .order-tools button{min-height:44px;padding:7px 5px;font-size:.875rem;line-height:1.2}
+#orderTicketHost .feedback{grid-column:1/-1;min-height:0;margin:0;font-size:.95rem;line-height:1.3}
+#orderTicketHost .feedback:empty{display:none}
+@media(min-width:700px){
+  #orderTicketHost .order-card{max-width:780px}
+  #orderTicketHost .order-content{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;padding:18px}
+  #orderTicketHost .ticket-question{align-self:center;min-width:0}
+  #orderTicketHost .ticket-controls{min-width:0}
+  #orderTicketHost .equation{margin:24px 0}
+  #orderTicketHost #numberPad button{min-height:48px}
 }

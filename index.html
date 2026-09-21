@@ -8,8 +8,8 @@
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-title" content="Crispy Math Café" />
 <title>Crispy Math Café</title>
-<link rel="stylesheet" href="styles.css?v=20260921-pumpkin-fix" />
-<link rel="stylesheet" href="town.css?v=20260920-2300" />
+<link rel="stylesheet" href="styles.css?v=20260921-costume-ipad" />
+<link rel="stylesheet" href="town.css?v=20260921-costume-ipad" />
 </head>
 <body>
 <div class="page-pattern" aria-hidden="true"></div>
@@ -305,6 +305,7 @@
 </div>
 
 <div class="order-content">
+<div class="ticket-question">
 <h2 id="orderPrompt">Pack the chicken!</h2>
 <p id="orderStory" class="order-story">2 boxes. 3 pieces in each box.</p>
 <div class="equation" id="equation">2 × 3 = ?</div>
@@ -314,7 +315,9 @@
 <span class="answer-label">YOUR ANSWER</span>
 <input id="answerInput" readonly inputmode="none" aria-label="Answer" placeholder="?" />
 </div>
+</div>
 
+<div class="ticket-controls">
 <div id="numberPad" class="number-pad" aria-label="Number pad">
 <button type="button" data-number="1">1</button>
 <button type="button" data-number="2">2</button>
@@ -336,8 +339,8 @@
 <button id="hintBtn" class="secondary">💡 Use hint <span id="hintCountInline"></span></button>
 <button id="skipBtn" class="ghost">Back to the map</button>
 </div>
+</div>
 
-<p class="tiny-note">Start with 1 free hint. When you run out, the hint button takes you straight to the Hint Game.</p>
 <div id="feedback" class="feedback" role="status"></div>
 </div>
 </section>

@@ -437,7 +437,8 @@ body.level-up .topbar{
 .chicken-avatar{
   position:relative;
   width:118px;
-  height:132px;
+  height:164px;
+  padding-bottom:32px;
   flex:0 0 118px;
   display:flex;
   align-items:flex-end;
@@ -598,7 +599,7 @@ body.level-up .topbar{
 .chicken-avatar[data-style="halloween_chicken"] .chef-hat:after,
 .chicken-avatar[data-style="halloween_chicken"] .chef-hat span{background:#2f2730}
 @media(max-width:650px){
-  .chicken-avatar{width:104px;height:122px;flex-basis:104px}
+  .chicken-avatar{width:104px;height:154px;flex-basis:104px}
   .chicken-body{transform:scale(.9);transform-origin:50% 100%}
 }
 
@@ -752,7 +753,7 @@ body.level-up .topbar{
 }
 .duck-scorebar strong{font-variant-numeric:tabular-nums}
 .chicken-shop-preview{
-  min-height:132px;
+  min-height:164px;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -842,13 +843,13 @@ body.level-up .topbar{
   display:none;
   position:absolute;
   left:50%;
-  top:48px;
+  top:43px;
   transform:translateX(-50%);
-  width:78px;
-  height:58px;
+  width:110px;
+  height:66px;
   z-index:2;
   border:3px solid var(--ink);
-  border-radius:48% 48% 45% 45%;
+  border-radius:44% 44% 48% 48%;
   background:
     radial-gradient(ellipse at 25% 50%,rgba(255,196,82,.28) 0 28%,transparent 30%),
     radial-gradient(ellipse at 75% 50%,rgba(120,54,0,.12) 0 28%,transparent 30%),
@@ -858,14 +859,14 @@ body.level-up .topbar{
 .pumpkin-suit:before{
   content:"";
   position:absolute;
-  top:-12px;
+  top:-5px;
   left:50%;
-  width:10px;
-  height:15px;
-  transform:translateX(-50%) rotate(5deg);
+  width:46px;
+  height:12px;
+  transform:translateX(-50%);
   background:#3c7a35;
   border:2px solid var(--ink);
-  border-radius:4px;
+  border-radius:50%;
 }
 .pumpkin-eye,.pumpkin-nose,.pumpkin-mouth{
   position:absolute;
@@ -879,8 +880,8 @@ body.level-up .topbar{
   height:11px;
   clip-path:polygon(50% 0,100% 100%,0 100%);
 }
-.pumpkin-eye-left{left:17px}
-.pumpkin-eye-right{right:17px}
+.pumpkin-eye-left{left:27px}
+.pumpkin-eye-right{right:27px}
 .pumpkin-nose{
   top:29px;
   left:50%;
@@ -890,8 +891,8 @@ body.level-up .topbar{
   clip-path:polygon(50% 0,100% 100%,0 100%);
 }
 .pumpkin-mouth{
-  left:19px;
-  right:19px;
+  left:27px;
+  right:27px;
   bottom:9px;
   height:9px;
   clip-path:polygon(0 0,15% 40%,30% 0,45% 45%,60% 0,75% 40%,100% 0,90% 100%,72% 70%,58% 100%,43% 68%,28% 100%,12% 72%);
@@ -909,7 +910,11 @@ body.level-up .topbar{
 .chicken-avatar[data-style="halloween_chicken"] .wing{
   background:#f5dfba;
   z-index:4;
+  top:40px;
 }
+.chicken-avatar[data-style="halloween_chicken"] .wing-left{left:-23px;transform:rotate(30deg)}
+.chicken-avatar[data-style="halloween_chicken"] .wing-right{right:-23px;transform:rotate(-30deg)}
+.chicken-avatar[data-style="halloween_chicken"] .wattle{top:39px;height:11px;z-index:3}
 .chicken-avatar[data-style="halloween_chicken"] .legs{
   z-index:1;
 }
