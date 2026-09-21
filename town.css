@@ -49,8 +49,8 @@
   background-image:radial-gradient(rgba(42,26,17,.07) 1.5px,transparent 1.6px);
   background-size:2.2% 2.2%}
 
-/* roads */
-.tb-road{position:absolute;background:#6B5A50;z-index:2}
+/* Roads sit above grass but below scenery and buildings. */
+.tb-road{position:absolute;background:#6B5A50;z-index:1;pointer-events:none}
 .tb-road::after{content:"";position:absolute;opacity:.85}
 .tb-road.h{left:0;right:0;height:3.1%}
 .tb-road.h::after{left:0;right:0;top:50%;height:2px;transform:translateY(-50%);
@@ -60,7 +60,7 @@
   background-image:repeating-linear-gradient(180deg,#FFF0CC 0 .8%,transparent .8%,transparent 1.7%)}
 
 /* terrain */
-.town-terrain{position:absolute;inset:0;z-index:1}
+.town-terrain{position:absolute;inset:0;z-index:2;pointer-events:none}
 .town-terrain > *{animation:townFade .9s ease both}
 @keyframes townFade{from{opacity:0;transform:scale(.9)}}
 .tb-deco{position:absolute;transform:translate(-50%,-50%);font-size:2.6cqi;
