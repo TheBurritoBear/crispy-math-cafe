@@ -430,3 +430,173 @@ body.level-up .topbar{
   .store-name-row{grid-template-columns:1fr}
   .store-name-row button{width:100%}
 }
+
+
+/* Full chef chicken avatar */
+.chicken-avatar{
+  position:relative;
+  width:118px;
+  height:132px;
+  flex:0 0 118px;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+  font-size:inherit;
+  overflow:visible;
+}
+.chicken-body{
+  position:relative;
+  width:86px;
+  height:94px;
+  background:#fff8ea;
+  border:3px solid var(--ink);
+  border-radius:48% 48% 44% 44%;
+  box-shadow:3px 4px 0 var(--ink);
+  z-index:1;
+}
+.chef-hat{
+  position:absolute;
+  top:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:66px;
+  height:36px;
+  z-index:4;
+}
+.chef-hat span{
+  position:absolute;
+  background:#fff;
+  border:3px solid var(--ink);
+  border-radius:50%;
+}
+.chef-hat span:nth-child(1){width:25px;height:25px;left:0;top:7px}
+.chef-hat span:nth-child(2){width:30px;height:30px;left:18px;top:0}
+.chef-hat span:nth-child(3){width:25px;height:25px;right:0;top:7px}
+.chef-hat:after{
+  content:"";
+  position:absolute;
+  left:10px;
+  right:10px;
+  bottom:-2px;
+  height:13px;
+  background:#fff;
+  border:3px solid var(--ink);
+  border-radius:8px;
+}
+.comb{
+  position:absolute;
+  top:-7px;
+  left:20px;
+  width:23px;
+  height:15px;
+  background:#d93a2f;
+  border:3px solid var(--ink);
+  border-radius:12px 12px 8px 8px;
+}
+.eye{
+  position:absolute;
+  top:25px;
+  width:8px;
+  height:8px;
+  background:var(--ink);
+  border-radius:50%;
+}
+.eye-left{left:24px}
+.eye-right{right:24px}
+.beak{
+  position:absolute;
+  top:34px;
+  left:50%;
+  transform:translateX(-50%);
+  width:17px;
+  height:13px;
+  background:#ffb531;
+  border:3px solid var(--ink);
+  clip-path:polygon(0 0,100% 50%,0 100%);
+}
+.wattle{
+  position:absolute;
+  top:48px;
+  left:50%;
+  transform:translateX(-50%);
+  width:12px;
+  height:14px;
+  background:#d93a2f;
+  border:3px solid var(--ink);
+  border-radius:50%;
+}
+.wing{
+  position:absolute;
+  top:40px;
+  width:24px;
+  height:32px;
+  background:#f5dfba;
+  border:3px solid var(--ink);
+  border-radius:50%;
+}
+.wing-left{left:-9px;transform:rotate(18deg)}
+.wing-right{right:-9px;transform:rotate(-18deg)}
+.tail{
+  position:absolute;
+  right:-14px;
+  top:35px;
+  width:25px;
+  height:32px;
+  z-index:-1;
+}
+.tail:before,.tail:after{
+  content:"";
+  position:absolute;
+  background:#fff3cf;
+  border:3px solid var(--ink);
+  border-radius:50%;
+}
+.tail:before{width:19px;height:30px;right:0;top:0;transform:rotate(-28deg)}
+.tail:after{width:17px;height:26px;left:0;top:7px;transform:rotate(-8deg)}
+.legs{
+  position:absolute;
+  bottom:-27px;
+  left:50%;
+  transform:translateX(-50%);
+  width:38px;
+  display:flex;
+  justify-content:space-between;
+}
+.legs span{
+  position:relative;
+  width:5px;
+  height:24px;
+  background:#ffb531;
+  border:2px solid var(--ink);
+  border-radius:4px;
+}
+.legs span:after{
+  content:"";
+  position:absolute;
+  left:-7px;
+  bottom:-5px;
+  width:17px;
+  height:5px;
+  background:#ffb531;
+  border:2px solid var(--ink);
+  border-radius:6px;
+}
+.chicken-avatar[data-style="original"] .chicken-body{background:#fff0cf}
+.chicken-avatar[data-style="soy_garlic"] .chicken-body{background:#eed1a0}
+.chicken-avatar[data-style="honey_butter"] .chicken-body{background:#ffd76a}
+.chicken-avatar[data-style="sweet_chili"] .chicken-body{background:#f27a5f}
+.chicken-avatar[data-style="sesame"] .chicken-body{background:#efe1c8}
+.chicken-avatar[data-style="gochujang"] .chicken-body{background:#d84d38}
+.chicken-avatar[data-style="golden_garlic"] .chicken-body{background:#ffc94d}
+.chicken-avatar[data-style="firecracker"] .chicken-body{background:#ef5f41}
+.chicken-avatar[data-style="halloween_chicken"] .chicken-body{background:#f59c3d}
+.chicken-avatar[data-style="halloween_chicken"] .chef-hat:after,
+.chicken-avatar[data-style="halloween_chicken"] .chef-hat span{background:#2f2730}
+@media(max-width:650px){
+  .chicken-avatar{width:104px;height:122px;flex-basis:104px}
+  .chicken-body{transform:scale(.9);transform-origin:50% 100%}
+}
