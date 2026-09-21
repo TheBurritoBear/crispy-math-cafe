@@ -5,9 +5,12 @@ const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 let sessionToken=localStorage.getItem('cmc_session')||'';
 let player=null;
 let currentQ=null;
-let rush={timer:null,time:60,score:0,correct:0,incorrect:0,q:null,active:false};
+let rush=freshRush();
 const DUCK={time:60,goal:20,missPenalty:2,maxMisses:5,perLane:3,speed:{1:20,2:16,3:12.5}};
-let duck={timer:null,time:DUCK.time,score:0,correct:0,incorrect:0,active:false,rowStats:{1:0,2:0,3:0}};
+let duck=freshDuck();
+
+function freshRush(){return {timer:null,time:60,score:0,correct:0,incorrect:0,q:null,active:false};}
+function freshDuck(){return {timer:null,time:DUCK.time,score:0,correct:0,incorrect:0,active:false,rowStats:{1:0,2:0,3:0}};}
 
 const $=id=>document.getElementById(id);
 
@@ -335,9 +338,21 @@ function appendAnswer(n){
 function clearAnswer(){ $('answerInput').value=''; }
 function deleteAnswer(){ $('answerInput').value=$('answerInput').value.slice(0,-1); }
 
-function startRush(){
+function resetRush(){
   clearInterval(rush.timer);
-  rush={timer:null,time:60,score:0,correct:0,incorrect:0,q:null,active:true};
+  rush=freshRush();
+  $('rushInput').value='';
+  $('rushInput').disabled=true;
+  $('rushSubmit').disabled=true;
+  $('rushStart').disabled=false;
+  $('rushQuit').disabled=true;
+  $('rushEquation').textContent='Press start';
+  $('rushMsg').textContent='';
+  renderRush();
+}
+function startRush(){
+  resetRush();
+  rush.active=true;
   $('rushInput').disabled=false;
   $('rushSubmit').disabled=false;
   $('rushStart').disabled=true;
@@ -356,23 +371,27 @@ async function finishRush(reason='time'){
   clearInterval(rush.timer);
   if(!rush.active)return;
   rush.active=false;
+  const round=rush;
   $('rushInput').disabled=true;
   $('rushSubmit').disabled=true;
   $('rushStart').disabled=false;
   $('rushQuit').disabled=true;
   const elapsed=Math.max(1,60-rush.time);
   if(reason==='quit'){
+    resetRush();
     hideOrderTicket();
     showPanel('orders');
   }
   try{
     await rpc('submit_score',{
       p_session_token:sessionToken,p_mode:'rush',p_level:player.current_level,
-      p_score:rush.score,p_correct:rush.correct,p_incorrect:rush.incorrect,
+      p_score:round.score,p_correct:round.correct,p_incorrect:round.incorrect,
       p_duration_seconds:elapsed,p_metadata:{difficulty_max:maxFactorForLevel(player.current_level),end:reason}
     });
   }catch(e){}
-  $('rushMsg').textContent=`${reason==='quit'?'Ended early!':'Finished!'} Score ${rush.score} · ${rush.correct} correct · ${rush.incorrect} incorrect.`;
+  if(rush===round){
+    $('rushMsg').textContent=`Finished! Score ${round.score} · ${round.correct} correct · ${round.incorrect} incorrect.`;
+  }
 }
 function rushNext(){
   rush.q=makeQ(player.current_level,true);
@@ -517,7 +536,8 @@ function shootDuck(btn){
   renderDuck();
   if(duck.score>=DUCK.goal){finishDuck('win');return;}
   if(duck.incorrect>=DUCK.maxMisses){finishDuck('misses');return;}
-  setTimeout(()=>{ if(duck.active) refillDuck(btn); },eq.isTrue?450:900);
+  const round=duck;
+  setTimeout(()=>{ if(duck===round&&round.active&&btn.isConnected) refillDuck(btn); },eq.isTrue?450:900);
 }
 function setDuckStatus(msg,good){
   const el=$('duckStatus');
@@ -528,9 +548,26 @@ function shakeDuckBoard(){
   const el=$('duckCarnival');
   el.classList.remove('shake');void el.offsetWidth;el.classList.add('shake');
 }
-function startDuck(){
+function resetDuck(){
   clearInterval(duck.timer);
-  duck={timer:null,time:DUCK.time,score:0,correct:0,incorrect:0,active:true,rowStats:{1:0,2:0,3:0}};
+  duck=freshDuck();
+  $('duckStart').disabled=false;
+  $('duckStart').textContent='Start Duck Dash';
+  $('duckQuit').disabled=true;
+  $('duckCarnival').classList.remove('is-over','is-won','shake');
+  const over=$('duckOver');
+  over.hidden=true;
+  over.querySelector('.duck-over-emoji').textContent='💦';
+  over.querySelector('.duck-over-title').textContent='Game over!';
+  over.querySelector('.duck-over-text').textContent='';
+  $('duckOverBtn').textContent='Try again';
+  [1,2,3].forEach(row=>$('duckLane'+row).replaceChildren());
+  setDuckStatus('Tap Start when you’re ready.');
+  renderDuck();
+}
+function startDuck(){
+  resetDuck();
+  duck.active=true;
   $('duckStart').disabled=true;
   $('duckQuit').disabled=false;
   $('duckCarnival').classList.remove('is-over','is-won');
@@ -548,6 +585,7 @@ async function finishDuck(reason){
   clearInterval(duck.timer);
   if(!duck.active)return;
   duck.active=false;
+  const round=duck;
   const success=reason==='win';
   $('duckCarnival').classList.add('is-over');
   if(success) $('duckCarnival').classList.add('is-won');
@@ -567,20 +605,21 @@ async function finishDuck(reason){
   setDuckStatus(success?'Hint earned! 🎉':reason==='quit'?'Round ended.':'Tap “Try again” to play another round.',success?true:null);
   const elapsed=Math.max(1,DUCK.time-duck.time);
   if(reason==='quit'){
+    resetDuck();
     hideOrderTicket();
     showPanel('orders');
   }
   try{
     await rpc('submit_score',{
       p_session_token:sessionToken,p_mode:'duck_dash',p_level:player.current_level,
-      p_score:duck.score,p_correct:duck.correct,p_incorrect:duck.incorrect,
+      p_score:round.score,p_correct:round.correct,p_incorrect:round.incorrect,
       p_duration_seconds:elapsed,
-      p_metadata:{earned_hint:success,end:reason,target:DUCK.goal,time_left:duck.time,row_stats:duck.rowStats,control:'true_false_ducks'}
+      p_metadata:{earned_hint:success,end:reason,target:DUCK.goal,time_left:round.time,row_stats:round.rowStats,control:'true_false_ducks'}
     });
   }catch(e){}
   if(success){
     try{ await savePlayer({hints:player.hints+1}); }catch(e){}
-    setTimeout(()=>{ $('duckOver').hidden=true; showPanel('orders'); },1800);
+    setTimeout(()=>{ if(duck===round){ $('duckOver').hidden=true; showPanel('orders'); } },1800);
   }
 }
 function renderDuck(){
