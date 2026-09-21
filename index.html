@@ -61,7 +61,6 @@
       <nav class="tabs" aria-label="Game modes">
         <button data-tab="orders" class="active"><span>🍗</span> Take orders</button>
         <button data-tab="rush"><span>⚡</span> 60-second rush</button>
-        <button data-tab="duck" id="duckTab"><span>💡</span> Hint game</button>
         <button data-tab="shop"><span>🛍</span> Coin shop</button>
         <button data-tab="leaderboard"><span>🏆</span> Leaderboards</button>
       </nav>
@@ -79,7 +78,20 @@
               </div>
 
               <div class="chef-stage">
-                <div id="chickenAvatar" class="chicken-avatar" aria-label="Your chicken chef">🐔</div>
+                <div id="chickenAvatar" class="chicken-avatar" data-style="plain" aria-label="Your chicken chef">
+                  <div class="chef-hat" aria-hidden="true"><span></span><span></span><span></span></div>
+                  <div class="chicken-body" aria-hidden="true">
+                    <div class="comb"></div>
+                    <div class="eye eye-left"></div>
+                    <div class="eye eye-right"></div>
+                    <div class="beak"></div>
+                    <div class="wattle"></div>
+                    <div class="wing wing-left"></div>
+                    <div class="wing wing-right"></div>
+                    <div class="tail"></div>
+                    <div class="legs"><span></span><span></span></div>
+                  </div>
+                </div>
                 <div>
                   <strong>Your chicken chef</strong>
                   <div id="chickenStyleLabel" class="muted">Serving plain chicken</div>
@@ -154,7 +166,7 @@
                 <button id="hintBtn" class="secondary">💡 Use hint <span id="hintCountInline"></span></button>
                 <button id="skipBtn" class="ghost">Skip this order</button>
               </div>
-              <p class="tiny-note">Start with 1 free hint. Earn more in the Hint Game.</p>
+              <p class="tiny-note">Start with 1 free hint. When you run out, the hint button takes you straight to the Hint Game.</p>
               <div id="feedback" class="feedback" role="status"></div>
             </div>
           </section>
@@ -235,7 +247,7 @@
           </div>
           <div class="board-toggle">
             <button id="rushBoardBtn" class="active">⚡ Rush</button>
-            <button id="duckBoardBtn" class="secondary">💡 Hint Game</button>
+            <button id="duckBoardBtn" class="secondary">💡 Hint scores</button>
           </div>
           <div class="table-wrap">
             <table>
