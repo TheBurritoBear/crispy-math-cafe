@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#8f1d14" />
   <title>Crispy Math Café</title>
-  <link rel="stylesheet" href="styles.css?v=20260920-2215" />
+  <link rel="stylesheet" href="styles.css?v=20260920-2305" />
 </head>
 <body>
   <div class="page-pattern" aria-hidden="true"></div>
@@ -86,6 +86,12 @@
                     <div class="eye eye-right"></div>
                     <div class="beak"></div>
                     <div class="wattle"></div>
+                    <div class="pumpkin-suit" aria-hidden="true">
+                      <span class="pumpkin-eye pumpkin-eye-left"></span>
+                      <span class="pumpkin-eye pumpkin-eye-right"></span>
+                      <span class="pumpkin-nose"></span>
+                      <span class="pumpkin-mouth"></span>
+                    </div>
                     <div class="wing wing-left"></div>
                     <div class="wing wing-right"></div>
                     <div class="tail"></div>
@@ -215,25 +221,22 @@
 
         <div id="duckCarnival" class="duck-carnival" aria-label="Three moving duck rows">
           <div class="duck-lane lane-3">
-            <div class="duck-lane-label"><strong>3 PTS</strong><span>Hardest · fastest →</span></div>
+            <div class="duck-lane-label"><strong>3 PTS</strong><span>Hardest · fastest →</span><b id="duckRow3Question" class="lane-question">?</b></div>
             <div id="duckLane3" class="duck-lane-playfield"></div>
           </div>
           <div class="duck-lane lane-2">
-            <div class="duck-lane-label"><strong>2 PTS</strong><span>Medium · ←</span></div>
+            <div class="duck-lane-label"><strong>2 PTS</strong><span>Medium · ←</span><b id="duckRow2Question" class="lane-question">?</b></div>
             <div id="duckLane2" class="duck-lane-playfield"></div>
           </div>
           <div class="duck-lane lane-1">
-            <div class="duck-lane-label"><strong>1 PT</strong><span>Easiest · slowest →</span></div>
+            <div class="duck-lane-label"><strong>1 PT</strong><span>Easiest · slowest →</span><b id="duckRow1Question" class="lane-question">?</b></div>
             <div id="duckLane1" class="duck-lane-playfield"></div>
           </div>
         </div>
 
-        <div class="duck-answer-panel">
-          <div class="equation duck-equation" id="duckEquation">Tap Start, then tap any duck to choose a problem.</div>
-          <div class="duck-answer-row">
-            <input id="duckInput" inputmode="numeric" placeholder="Answer" disabled />
-            <button id="duckSubmit" class="secondary" disabled>Answer duck</button>
-          </div>
+        <div class="duck-answer-panel compact">
+          <div class="equation duck-equation" id="duckEquation">Tap Start, then tap the duck carrying the correct answer.</div>
+          <div class="tiny-note duck-help">One tap = one answer. The ducks keep moving the whole time.</div>
         </div>
 
         <div class="actions">
@@ -289,6 +292,6 @@
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=20260920-2215"></script>
+  <script src="app.js?v=20260920-2305"></script>
 </body>
 </html>
