@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Crispy Math Café</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <div class="eyebrow">KOREAN FRIED CHICKEN · 치킨</div>
+        <h1>🍗 Crispy Math Café</h1>
+        <p>Multiply. Pack. Serve. Level up.</p>
+      </div>
+      <div class="stats">
+        <span id="levelBadge">Level 1</span>
+        <span id="coinBadge">0 coins</span>
+      </div>
+    </header>
+
+    <section id="authCard" class="card">
+      <h2>Player login</h2>
+      <p>Use the same name + save code on any device to restore progress.</p>
+      <div class="grid2">
+        <input id="playerName" maxlength="24" placeholder="Player name" autocomplete="username" />
+        <input id="saveCode" maxlength="32" placeholder="Private save code" autocomplete="current-password" />
+      </div>
+      <div class="actions">
+        <button id="loginBtn">Continue game</button>
+        <button id="createBtn" class="secondary">Create player</button>
+      </div>
+      <p id="authMsg" class="msg"></p>
+    </section>
+
+    <section id="gameApp" class="hidden">
+      <nav class="tabs">
+        <button data-tab="orders" class="active">Take orders</button>
+        <button data-tab="rush">60-second rush</button>
+        <button data-tab="duck">Duck Dash</button>
+        <button data-tab="shop">Coin shop</button>
+        <button data-tab="leaderboard">Leaderboards</button>
+      </nav>
+
+      <section id="orders" class="panel card">
+        <div class="split">
+          <div>
+            <h2 id="storeTitle">My Chicken Shop</h2>
+            <p id="progressText">0 / 10 correct to complete this level</p>
+          </div>
+          <div class="chicken">🐔</div>
+        </div>
+
+        <div class="orderBox">
+          <div class="eyebrow" id="orderCounter">ORDER</div>
+          <h3 id="orderPrompt">Pack the chicken!</h3>
+          <div class="equation" id="equation">2 × 3 = ?</div>
+          <input id="answerInput" inputmode="numeric" placeholder="Answer" />
+          <div class="actions">
+            <button id="serveBtn">Serve order</button>
+            <button id="hintBtn" class="secondary">Use hint</button>
+          </div>
+          <div id="feedback" class="feedback"></div>
+        </div>
+      </section>
+
+      <section id="rush" class="panel card hidden">
+        <h2>60-second rush</h2>
+        <p>+1 correct · −1 incorrect. Difficulty scales with your level.</p>
+        <div class="rushTop">
+          <span id="rushTime">60s</span>
+          <span id="rushScore">Score 0</span>
+        </div>
+        <div class="equation" id="rushEquation">Press start</div>
+        <input id="rushInput" inputmode="numeric" placeholder="Answer" disabled />
+        <div class="actions">
+          <button id="rushStart">Start rush</button>
+          <button id="rushSubmit" class="secondary" disabled>Submit answer</button>
+        </div>
+        <p id="rushMsg" class="msg"></p>
+      </section>
+
+      <section id="duck" class="panel card hidden">
+        <h2>Duck Dash</h2>
+        <p>Answer a short streak of harder questions to earn hints.</p>
+        <div class="equation" id="duckEquation">Press start</div>
+        <input id="duckInput" inputmode="numeric" placeholder="Answer" disabled />
+        <div class="actions">
+          <button id="duckStart">Start Duck Dash</button>
+          <button id="duckSubmit" class="secondary" disabled>Submit answer</button>
+        </div>
+        <p id="duckStatus">0 / 5 correct</p>
+      </section>
+
+      <section id="shop" class="panel card hidden">
+        <h2>Coin shop</h2>
+        <div id="shopItems"></div>
+      </section>
+
+      <section id="leaderboard" class="panel card hidden">
+        <div class="actions">
+          <button id="rushBoardBtn">Rush</button>
+          <button id="duckBoardBtn" class="secondary">Duck Dash</button>
+        </div>
+        <table>
+          <thead><tr><th>#</th><th>Name</th><th>Level</th><th>Score</th></tr></thead>
+          <tbody id="boardBody"></tbody>
+        </table>
+      </section>
+
+      <section class="card accountBar">
+        <div>
+          <strong id="playerLabel"></strong>
+          <span id="hintLabel"></span>
+        </div>
+        <button id="logoutBtn" class="secondary">Log out</button>
+      </section>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+</body>
+</html>
