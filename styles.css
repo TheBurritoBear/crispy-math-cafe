@@ -566,6 +566,9 @@ body.level-up .topbar{
 }
 .tail:before{width:19px;height:30px;right:0;top:0;transform:rotate(-28deg)}
 .tail:after{width:17px;height:26px;left:0;top:7px;transform:rotate(-8deg)}
+/* Front-facing avatars show one wing per side. The side tail feathers
+   overlapped the chicken's left wing and looked like extra hands. */
+.chicken-avatar .tail{display:none}
 .legs{
   position:absolute;
   bottom:-27px;
