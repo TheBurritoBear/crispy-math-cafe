@@ -26,8 +26,8 @@ const Town = (function(){
     {id:'dentist',name:'Dentist',     icon:'🦷', x:85, y:50, roof:'#3D8C7A', tier:3},
     {id:'toys',   name:'Toy Store',   icon:'🧸', x:50, y:85, roof:'#E0782A', tier:3},
     // tier 4 — the far valley
-    {id:'bank',   name:'Bank',        icon:'🏦', x:8,  y:8,  roof:'#4F5B7A', tier:4},
-    {id:'hotel',  name:'Hotel',       icon:'🏨', x:92, y:8,  roof:'#A03E6E', tier:4},
+    {id:'bank',   name:'Bank',        icon:'🏦', x:8,  y:27,  roof:'#4F5B7A', tier:4},
+    {id:'hotel',  name:'Hotel',       icon:'🏨', x:92, y:27,  roof:'#A03E6E', tier:4},
     {id:'post',   name:'Post Office', icon:'📮', x:8,  y:86, roof:'#1F6FA8', tier:4},
     {id:'bus',    name:'Bus Depot',   icon:'🚌', x:92, y:86, roof:'#7A5C2E', tier:4}
   ];
@@ -39,7 +39,7 @@ const Town = (function(){
     {k:'e',e:'🌳',x:25,y:75,from:1,until:1}, {k:'e',e:'🌳',x:75,y:75,from:1,until:1},
     {k:'e',e:'🌲',x:50,y:15,from:2,until:2}, {k:'e',e:'🌲',x:15,y:50,from:2,until:2},
     {k:'e',e:'🌲',x:85,y:50,from:2,until:2}, {k:'e',e:'🌲',x:50,y:85,from:2,until:2},
-    {k:'e',e:'🌲',x:8, y:8, from:3,until:3}, {k:'e',e:'🌲',x:92,y:8, from:3,until:3},
+    {k:'e',e:'🌲',x:8, y:27,from:3,until:3}, {k:'e',e:'🌲',x:92,y:27,from:3,until:3},
     {k:'e',e:'🌲',x:8, y:86,from:3,until:3}, {k:'e',e:'🌲',x:92,y:86,from:3,until:3},
     // street life
     {k:'e',e:'🚗',x:50,y:35.5,from:1}, {k:'e',e:'🌷',x:43,y:43,from:1},
@@ -52,16 +52,16 @@ const Town = (function(){
     {k:'e',e:'🌲',x:7, y:74,from:3},
     // tier 4 — mountains north, river south
     {k:'mountains',from:4},
-    {k:'e',e:'🦅',x:30,y:13,from:4},   {k:'e',e:'⛺',x:68,y:12,from:4},
+    {k:'e',e:'🦅',x:27,y:15,from:4},   {k:'e',e:'⛺',x:70,y:15.5,from:4},
     {k:'river',from:4},                {k:'bridge',from:4},
     {k:'e',e:'🐟',x:22,y:96,from:4},   {k:'e',e:'🛶',x:74,y:96,from:4},
     {k:'e',e:'🌾',x:35,y:91,from:4},   {k:'e',e:'🌾',x:63,y:91,from:4}
   ];
 
   const TIERS = [
-    {name:'Crispy Village', zoom:1.10, blurb:'a quiet little village'},
-    {name:'Crispy Town',    zoom:0.92, blurb:'the corners filled in'},
-    {name:'Crispy City',    zoom:0.76, blurb:'a lake and the woods appeared'},
+    {name:'Crispy Village', zoom:1.00, blurb:'a quiet little village'},
+    {name:'Crispy Town',    zoom:0.88, blurb:'the corners filled in'},
+    {name:'Crispy City',    zoom:0.70, blurb:'a lake and the woods appeared'},
     {name:'Crispy Valley',  zoom:0.625,blurb:'mountains and a river!'}
   ];
 
@@ -123,11 +123,7 @@ const Town = (function(){
       } else if (t.k === 'mountains'){
         el.className = 'tb-mountains';
         el.innerHTML =
-          '<div class="tb-mtn" style="height:78%"></div>' +
-          '<div class="tb-mtn" style="height:100%"></div>' +
-          '<div class="tb-mtn" style="height:62%"></div>' +
-          '<div class="tb-mtn" style="height:88%"></div>' +
-          '<div class="tb-mtn" style="height:70%"></div>';
+          [72,95,64,100,80,58,90,74].map(h => '<div class="tb-mtn" style="height:' + h + '%"></div>').join('');
       } else if (t.k === 'river'){ el.className = 'tb-river'; }
       else if (t.k === 'bridge'){ el.className = 'tb-bridge'; }
       layer.appendChild(el);
@@ -314,3 +310,4 @@ const Town = (function(){
 
   return {init, setLevel, complete, reroll, skip, close:closeTicket, activeOrder};
 })();
+window.Town = Town; // a top-level const isn't on window, and app.js checks window.Town before growing the town
