@@ -1037,3 +1037,73 @@ body.level-up .topbar{
 .chicken-avatar[data-costume="firefighter"] .chef-hat{top:3px;width:65px;height:32px;background:#e54636;border:3px solid var(--ink);border-radius:50% 50% 10% 10%;z-index:6}
 .chicken-avatar[data-costume="firefighter"] .chef-hat::after{left:-10px;right:-10px;bottom:-7px;height:10px;background:#e54636;border:3px solid var(--ink);border-radius:50%}
 .chicken-avatar[data-costume="firefighter"] .chef-hat::before{content:"";position:absolute;left:23px;top:4px;width:14px;height:18px;background:#ffe75d;border:2px solid var(--ink);border-radius:3px 3px 50% 50%;z-index:2}
+
+/* ===== Duck Dash v2: true / false equation ducks =====
+   (overrides the older duck rules above) */
+.duck-scorebar strong b{font:inherit}
+.duck-misses{display:flex;gap:4px;justify-content:center;align-items:center;min-height:1.6rem}
+.duck-misses i{font-style:normal;font-size:1.15rem;line-height:1;color:#c9b59b;width:1.1em;text-align:center}
+.duck-misses i.used{color:#c8321e;animation:missPop .3s cubic-bezier(.2,1.5,.4,1)}
+@keyframes missPop{from{transform:scale(1.9)}}
+.duck-howto{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:14px}
+.duck-chip{border:2.5px solid var(--ink);border-radius:999px;padding:5px 12px;font-weight:1000;font-size:.92rem;background:#fff}
+.duck-chip.good{background:#dff5e3}
+.duck-chip.bad{background:#ffe3dc}
+.duck-carnival{position:relative;margin-top:12px}
+.duck-carnival.shake{animation:townShake .34s}
+.duck-lane{grid-template-columns:96px minmax(0,1fr);min-height:124px}
+.duck-lane-playfield{min-height:124px}
+.duck-lane-label strong{font-size:1.5rem}
+.duck-lane-label span{font-size:.72rem}
+.duck-target{
+  left:-260px;width:max-content;min-width:176px;min-height:86px;padding:6px 10px 8px;
+  display:grid;grid-template-columns:1fr auto;
+  grid-template-areas:"duck pts" "eq eq";
+  gap:2px 6px;align-items:center;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  -webkit-user-select:none;user-select:none;
+}
+.duck-target.ltr{animation-name:duckSwimRight}
+.duck-target.rtl{animation-name:duckSwimLeft}
+@keyframes duckSwimRight{from{left:-260px}to{left:calc(100% + 24px)}}
+@keyframes duckSwimLeft{from{left:calc(100% + 24px)}to{left:-260px}}
+.duck-target .duck-icon{grid-area:duck;font-size:1.7rem;justify-self:start}
+.duck-target .duck-points{grid-area:pts}
+.duck-eq{
+  grid-area:eq;display:block;text-align:center;white-space:nowrap;
+  font-size:1.3rem;font-weight:1000;line-height:1.1;letter-spacing:-.01em;
+  font-variant-numeric:tabular-nums;background:#fffdf5;border:2px solid var(--ink);
+  border-radius:10px;padding:4px 8px;
+}
+.duck-flag{position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:1.4rem;font-weight:1000;
+  width:34px;height:34px;border-radius:50%;display:none;place-items:center;border:3px solid var(--ink)}
+.duck-target.hit,.duck-target.miss{animation-play-state:paused}
+.duck-target.hit{background:#83e09a;outline:5px solid #e7ffec}
+.duck-target.hit .duck-flag{display:grid;background:#2f9a4a;color:#fff}
+.duck-target.miss{background:#ff9c86;outline:5px solid #ffe0d9}
+.duck-target.miss .duck-flag{display:grid;background:#c8321e;color:#fff}
+.duck-target.miss .duck-eq{background:#fff3ef}
+.duck-carnival.is-over .duck-target{animation-play-state:paused!important;opacity:.55}
+.duck-over{position:absolute;inset:0;z-index:10;display:grid;place-items:center;
+  background:rgba(42,26,17,.42);padding:14px}
+.duck-over[hidden]{display:none}
+.duck-over-card{background:var(--paper,#fffaf0);border:3px solid var(--ink);border-radius:20px;
+  box-shadow:4px 5px 0 var(--ink);padding:18px 22px;text-align:center;max-width:360px;
+  animation:townRise .28s cubic-bezier(.2,1.2,.4,1)}
+.duck-over-emoji{font-size:2.6rem;line-height:1}
+.duck-over-title{font-size:1.6rem;font-weight:1000;margin-top:4px}
+.duck-over-text{margin:6px 0 14px;font-weight:700;color:var(--muted)}
+.duck-over-card button{min-height:52px;min-width:180px;font-size:1.15rem}
+.duck-carnival.is-won .duck-over-card{background:#e9fbe9}
+.duck-msg{min-height:1.5em;font-weight:900;text-align:center}
+.duck-msg.good{color:#23803c}
+.duck-msg.bad{color:#b3261e}
+#duckStart{min-height:52px;font-size:1.1rem}
+@media(max-width:650px){
+  .duck-lane{grid-template-columns:62px minmax(0,1fr);min-height:112px}
+  .duck-lane-playfield{min-height:112px}
+  .duck-lane-label strong{font-size:1.15rem}
+  .duck-lane-label span{font-size:.56rem}
+  .duck-target{min-width:150px;min-height:78px}
+  .duck-eq{font-size:1.1rem}
+}

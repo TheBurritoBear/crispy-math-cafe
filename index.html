@@ -8,8 +8,8 @@
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-title" content="Crispy Math Café" />
 <title>Crispy Math Café</title>
-<link rel="stylesheet" href="styles.css?v=20260921-mix-match" />
-<link rel="stylesheet" href="town.css?v=20260921-costume-ipad" />
+<link rel="stylesheet" href="styles.css?v=20260921-wardrobe-ducks" />
+<link rel="stylesheet" href="town.css?v=20260921-wardrobe-ducks" />
 </head>
 <body>
 <div class="page-pattern" aria-hidden="true"></div>
@@ -210,40 +210,45 @@
 <div>
 <div class="section-kicker">EARN A HINT · CARNIVAL GAME</div>
 <h2>🦆 Duck Dash</h2>
-<p id="duckIntro">Reach 20 points in 60 seconds. Higher rows are faster, harder, and worth more.</p>
+<p id="duckIntro">Every duck carries a times fact. Tap only the TRUE ones! Get 20 points in 60 seconds. Wrong duck = −2 points, and 5 wrong ducks ends the game.</p>
 </div>
 <div class="mode-badge hint-badge">HINT +1</div>
 </div>
 <div class="rush-scorebar duck-scorebar">
 <div><span>TIME</span><strong id="duckTime">60s</strong></div>
-<div><span>POINTS</span><strong id="duckScore">0</strong></div>
-<div><span>GOAL</span><strong id="duckGoal">20</strong></div>
+<div><span>POINTS</span><strong><b id="duckScore">0</b> / <b id="duckGoal">20</b></strong></div>
+<div><span>MISSES</span><strong id="duckMisses" class="duck-misses" role="img" aria-label="0 of 5 misses"></strong></div>
 </div>
-<div id="duckCarnival" class="duck-carnival" aria-label="Three moving duck rows">
+<div class="duck-howto" aria-hidden="true">
+<span class="duck-chip good">6 × 7 = 42 ✓ tap it!</span>
+<span class="duck-chip bad">6 × 7 = 48 ✗ leave it</span>
+</div>
+<div id="duckCarnival" class="duck-carnival" aria-label="Three rows of moving ducks">
 <div class="duck-lane lane-3">
-<div class="duck-lane-label"><strong>3 PTS</strong><span>Hardest · fastest →</span></div>
+<div class="duck-lane-label"><strong>+3</strong><span>Hard · fast</span></div>
 <div id="duckLane3" class="duck-lane-playfield"></div>
 </div>
 <div class="duck-lane lane-2">
-<div class="duck-lane-label"><strong>2 PTS</strong><span>Medium · ←</span></div>
+<div class="duck-lane-label"><strong>+2</strong><span>Medium</span></div>
 <div id="duckLane2" class="duck-lane-playfield"></div>
 </div>
 <div class="duck-lane lane-1">
-<div class="duck-lane-label"><strong>1 PT</strong><span>Easiest · slowest →</span></div>
+<div class="duck-lane-label"><strong>+1</strong><span>Easy · slow</span></div>
 <div id="duckLane1" class="duck-lane-playfield"></div>
 </div>
+<div id="duckOver" class="duck-over" hidden>
+<div class="duck-over-card">
+<div class="duck-over-emoji">💦</div>
+<div class="duck-over-title">Game over!</div>
+<p class="duck-over-text"></p>
+<button id="duckOverBtn" type="button" class="primary">Try again</button>
 </div>
-<div class="duck-answer-panel">
-<div class="equation duck-equation" id="duckEquation">Tap Start, then tap any duck to choose a problem.</div>
-<div class="duck-answer-row">
-<input id="duckInput" inputmode="numeric" placeholder="Answer" disabled />
-<button id="duckSubmit" class="secondary" disabled>Answer duck</button>
 </div>
 </div>
 <div class="actions">
 <button id="duckStart" class="primary">Start Duck Dash</button>
 </div>
-<p id="duckStatus" class="msg" role="status">Tap Start when you’re ready.</p>
+<p id="duckStatus" class="msg duck-msg" role="status">Tap Start when you’re ready.</p>
 </section>
 
 <section id="shop" class="panel hidden">
@@ -315,6 +320,7 @@
 <span class="answer-label">YOUR ANSWER</span>
 <input id="answerInput" readonly inputmode="none" aria-label="Answer" placeholder="?" />
 </div>
+<div id="feedback" class="feedback" role="status"></div>
 </div>
 
 <div class="ticket-controls">
@@ -337,17 +343,16 @@
 
 <div class="order-tools">
 <button id="hintBtn" class="secondary">💡 Use hint <span id="hintCountInline"></span></button>
-<button id="skipBtn" class="ghost">Back to the map</button>
+<button id="skipBtn" class="ghost">🗺️ Back to map</button>
 </div>
 </div>
 
-<div id="feedback" class="feedback" role="status"></div>
 </div>
 </section>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="town.js?v=20260920-2300"></script>
-<script src="app.js?v=20260921-mix-match"></script>
+<script src="town.js?v=20260921-wardrobe-ducks"></script>
+<script src="app.js?v=20260921-wardrobe-ducks"></script>
 </body>
 </html>

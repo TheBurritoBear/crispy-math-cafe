@@ -141,6 +141,7 @@ const Town = (function(){
     tier = next;
     const t = TIERS[tier - 1];
     $('townWorld').style.setProperty('--town-zoom', t.zoom);
+    $('townWorld').dataset.tier = tier; // bigger labels as the camera zooms out (town.css)
     $('townTierName').textContent = t.name;
     renderTerrain();
     live().forEach(b => { if (!nodes[b.id]) addBuilding(b, grew); });

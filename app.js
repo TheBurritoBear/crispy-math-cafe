@@ -6,7 +6,8 @@ let sessionToken=localStorage.getItem('cmc_session')||'';
 let player=null;
 let currentQ=null;
 let rush={timer:null,time:60,score:0,correct:0,incorrect:0,q:null,active:false};
-let duck={timer:null,time:60,score:0,correct:0,incorrect:0,target:20,active:false,rowStats:{1:0,2:0,3:0},lanes:{}};
+const DUCK={time:60,goal:20,missPenalty:2,maxMisses:5,perLane:3,speed:{1:20,2:16,3:12.5}};
+let duck={timer:null,time:DUCK.time,score:0,correct:0,incorrect:0,active:false,rowStats:{1:0,2:0,3:0}};
 
 const $=id=>document.getElementById(id);
 
@@ -134,16 +135,13 @@ function openHintGame(){
   hideOrderTicket();
   showPanel('duck');
   updateUnlockUI();
-  $('duckStatus').textContent='You’re out of hints. Beat the goal to earn +1 and jump back to your order.';
+  $('duckStatus').textContent='You’re out of hints. Win Duck Dash to earn +1 and jump back to your order.';
   $('duckStart').focus();
 }
 function updateUnlockUI(){
   $('duckStart').disabled=duck.active;
-  $('duckIntro').textContent='Carnival Duck Dash: tap a moving duck, solve its addition or subtraction problem, and reach 20 points in 60 seconds. Top row = 3 points, middle = 2, bottom = 1. Wrong answers cost 1 point.';
-  if(!duck.active){
-    $('duckEquation').textContent='Tap Start, then tap any duck to choose a problem.';
-  }
-  $('duckGoal').textContent=20;
+  $('duckIntro').textContent=`Every duck carries a times fact. Some are TRUE, some are FALSE. Tap only the true ones! Get ${DUCK.goal} points in ${DUCK.time} seconds. Wrong duck = −${DUCK.missPenalty} points, and ${DUCK.maxMisses} wrong ducks ends the game.`;
+  renderDuck();
 }
 function updateUI(){
   const goal=levelGoal(player.current_level);
@@ -153,9 +151,9 @@ function updateUI(){
   $('playerLabel').textContent=player.display_name;
   $('hintLabel').textContent='Hints: '+player.hints;
   if(player.hints>0){
-    $('hintBtn').innerHTML=`💡 Use hint <span id="hintCountInline">(${player.hints} available)</span>`;
+    $('hintBtn').innerHTML=`💡 Hint <span id="hintCountInline">(${player.hints})</span>`;
   }else{
-    $('hintBtn').textContent='🎯 Earn a hint →';
+    $('hintBtn').textContent='🦆 Earn a hint';
   }
   $('storeTitle').textContent=player.store_name||'My Chicken Shop';
   $('storeNameEditor').classList.remove('hidden');
@@ -200,13 +198,19 @@ async function equipStyle(id){
 }
 
 /* ---------- order ticket, driven by the town map ---------- */
+function plural(n,one,many){ return `${n} ${n===1?one:many}`; }
+function orderStoryText(a,b){
+  // 1 box. 1 piece in the box. / 3 boxes. 1 piece in each box.
+  const where=a===1?'in the box':'in each box';
+  return `${plural(a,'box','boxes')}. ${plural(b,'piece','pieces')} ${where}.`;
+}
 function renderOrder(order){
   currentQ=order;
   const goal=levelGoal(player.current_level);
   $('ticketIcon').textContent=order.icon;
   $('orderCounter').textContent=`ORDER ${Math.min(goal,player.level_correct+1)} OF ${goal}`;
   $('orderPrompt').textContent=`${order.name} wants chicken!`;
-  $('orderStory').textContent=`${order.a} boxes. ${order.b} pieces in each box.`;
+  $('orderStory').textContent=orderStoryText(order.a,order.b);
   $('equation').textContent=`${order.a} × ${order.b} = ?`;
   $('orderQuestion').textContent='How many pieces altogether?';
   $('answerInput').value='';
@@ -381,41 +385,6 @@ function renderRush(){
   $('rushScore').textContent=rush.score;
 }
 
-function duckProblemForRow(row){
-  const level=Math.max(1,player?.current_level||1);
-  const maxByRow={
-    1:Math.min(24,8+level*2),
-    2:Math.min(50,16+level*4),
-    3:Math.min(90,26+level*6)
-  };
-  const max=maxByRow[row]||20;
-  const isSubtract=Math.random()<0.42;
-  if(isSubtract){
-    const a=3+Math.floor(Math.random()*Math.max(2,max-2));
-    const b=1+Math.floor(Math.random()*Math.max(1,a));
-    return {a,b,op:'−',answer:a-b,row,points:row};
-  }
-  const partMax=Math.max(3,Math.floor(max*.58));
-  const a=1+Math.floor(Math.random()*partMax);
-  const b=1+Math.floor(Math.random()*partMax);
-  return {a,b,op:'+',answer:a+b,row,points:row};
-}
-function duckProblemText(q){ return `${q.a} ${q.op} ${q.b} = ?`; }
-function shuffled(values){
-  return [...values].sort(()=>Math.random()-.5);
-}
-function duckAnswerChoices(answer,row){
-  const spread=row===3?7:row===2?5:3;
-  const values=new Set([answer]);
-  let guard=0;
-  while(values.size<3&&guard++<50){
-    const delta=1+Math.floor(Math.random()*spread);
-    const sign=Math.random()<.5?-1:1;
-    values.add(Math.max(0,answer+(delta*sign)));
-  }
-  while(values.size<3) values.add(answer+values.size+1);
-  return shuffled([...values]);
-}
 function chickenPreviewMarkup(style='plain',mini=false,color='natural',costume='none',main=false){
   const renderedStyle=costume==='halloween_chicken'?'halloween_chicken':style;
   return `<div ${main?'id="chickenAvatar" role="img" aria-label="'+escapeHtml(avatarColors[color]+' chicken, '+avatarCostumes[costume])+'"':'aria-hidden="true"'} class="chicken-avatar ${mini?'mini-chicken':''}" data-style="${escapeHtml(renderedStyle)}" data-color="${escapeHtml(color)}" data-costume="${escapeHtml(costume)}">
@@ -440,116 +409,166 @@ function chickenPreviewMarkup(style='plain',mini=false,color='natural',costume='
     </div>
   </div>`;
 }
-function buildDuckTarget(row,index,count=3){
-  const speed={1:15.5,2:11.5,3:8.5}[row];
-  const direction=row===2?'rtl':'ltr';
+/* ===== Duck Dash: true-or-false times facts =====
+   Each duck carries a full equation. Tap the TRUE ones.
+   True duck: +row points. False duck: −2 points and a miss.
+   5 misses = game over. Reach the goal before time runs out to earn a hint. */
+function duckFactForRow(row){
+  const level=Math.max(1,player?.current_level||1);
+  // bottom row a little easier than your level, top row a little harder
+  if(row===1) return makeQ(Math.max(1,level-1));
+  if(row===3) return makeQ(level,true);
+  return makeQ(level);
+}
+function duckWrongAnswer(q){
+  const {a,b,answer}=q;
+  const options=[answer+1,answer-1,answer+2,answer-2,answer+a,answer-a,answer+b,answer-b,answer+10,answer-10];
+  if(a!==b&&a+b!==answer) options.push(a+b);          // the classic "added instead of multiplied"
+  const good=[...new Set(options)].filter(v=>v>0&&v!==answer);
+  return good[Math.floor(Math.random()*good.length)]??answer+1;
+}
+function duckEquation(row,force){
+  // force: true / false to pick the kind, undefined for a coin flip
+  const q=duckFactForRow(row);
+  const isTrue=typeof force==='boolean'?force:Math.random()<0.5;
+  const shown=isTrue?q.answer:duckWrongAnswer(q);
+  return {a:q.a,b:q.b,answer:q.answer,shown,isTrue};
+}
+function buildDuckTarget(row,index){
+  const speed=DUCK.speed[row];
   const btn=document.createElement('button');
   btn.type='button';
-  btn.className=`duck-target row-${row} ${direction}`;
+  btn.className=`duck-target row-${row} ${row===2?'rtl':'ltr'}`;
   btn.dataset.row=row;
   btn.style.setProperty('--duck-speed',speed+'s');
-  btn.style.setProperty('--duck-delay',(-index*(speed/count))+'s');
-  btn.innerHTML=`<span class="duck-icon">🦆</span><span class="duck-answer">0</span><span class="duck-points">+${row}</span>`;
-  btn.onclick=()=>shootDuck(btn);
+  btn.style.setProperty('--duck-delay',(-index*(speed/DUCK.perLane))+'s');
+  btn.innerHTML=`<span class="duck-icon" aria-hidden="true">🦆</span><span class="duck-eq"></span><span class="duck-points">+${row}</span><span class="duck-flag" aria-hidden="true"></span>`;
+  btn.addEventListener('pointerdown',e=>{e.preventDefault();shootDuck(btn);});
+  btn.addEventListener('click',e=>{if(e.detail===0)shootDuck(btn);}); // keyboard / switch access
   return btn;
 }
-function setupDuckLane(row,build=false){
-  const q=duckProblemForRow(row);
-  const answers=duckAnswerChoices(q.answer,row);
-  duck.lanes[row]={q,answers};
-  const question=$('duckRow'+row+'Question');
-  if(question) question.textContent=duckProblemText(q);
-  const lane=$('duckLane'+row);
-  if(build||!lane.children.length){
-    lane.innerHTML='';
-    for(let i=0;i<3;i++) lane.appendChild(buildDuckTarget(row,i,3));
-  }
-  [...lane.querySelectorAll('.duck-target')].forEach((btn,i)=>{
-    const val=answers[i%answers.length];
-    btn.dataset.answer=val;
-    const answerEl=btn.querySelector('.duck-answer');
-    if(answerEl) answerEl.textContent=val;
-  });
+function loadDuck(btn,eq){
+  btn._eq=eq;
+  btn.classList.remove('hit','miss','busy');
+  btn.querySelector('.duck-flag').textContent='';
+  btn.querySelector('.duck-eq').textContent=`${eq.a} × ${eq.b} = ${eq.shown}`;
+  btn.setAttribute('aria-label',`${eq.a} times ${eq.b} equals ${eq.shown}`);
+}
+function laneHas(row,kind,except){
+  return [...$('duckLane'+row).querySelectorAll('.duck-target')].some(d=>d!==except&&d._eq&&d._eq.isTrue===kind);
+}
+function refillDuck(btn){
+  const row=Number(btn.dataset.row);
+  // every lane always keeps at least one true duck to find and one false duck to skip
+  let force;
+  if(!laneHas(row,true,btn)) force=true;
+  else if(!laneHas(row,false,btn)) force=false;
+  loadDuck(btn,duckEquation(row,force));
 }
 function populateDuckLanes(){
-  [3,2,1].forEach(row=>setupDuckLane(row,true));
+  [3,2,1].forEach(row=>{
+    const lane=$('duckLane'+row);
+    lane.innerHTML='';
+    for(let i=0;i<DUCK.perLane;i++){
+      const btn=buildDuckTarget(row,i);
+      lane.appendChild(btn);
+      loadDuck(btn,duckEquation(row,i===0?true:i===1?false:undefined));
+    }
+  });
 }
-function pulseDuck(btn,kind){
-  btn.classList.remove('hit','miss');
-  void btn.offsetWidth;
-  btn.classList.add(kind);
-  setTimeout(()=>btn.classList.remove(kind),320);
-}
-async function shootDuck(btn){
-  if(!duck.active)return;
+function shootDuck(btn){
+  if(!duck.active||btn.classList.contains('busy')||!btn._eq)return;
   const row=Number(btn.dataset.row)||1;
-  const lane=duck.lanes[row];
-  if(!lane)return;
-  const val=Number(btn.dataset.answer);
-  const correct=val===lane.q.answer;
-  if(correct){
+  const eq=btn._eq;
+  btn.classList.add('busy');
+  if(eq.isTrue){
     duck.correct++;
     duck.score+=row;
     duck.rowStats[row]++;
-    pulseDuck(btn,'hit');
-    $('duckStatus').textContent=`Bingo! +${row} point${row===1?'':'s'} from row ${row}.`;
-    setupDuckLane(row,false);
+    btn.classList.add('hit');
+    btn.querySelector('.duck-flag').textContent='✓';
+    setDuckStatus(`Yes! ${eq.a} × ${eq.b} = ${eq.answer}. +${row} point${row===1?'':'s'}!`,true);
   }else{
     duck.incorrect++;
-    duck.score=Math.max(0,duck.score-1);
-    pulseDuck(btn,'miss');
-    $('duckStatus').textContent=`Miss! ${duckProblemText(lane.q).replace(' = ?','')} = ${lane.q.answer}. −1 point.`;
+    duck.score=Math.max(0,duck.score-DUCK.missPenalty);
+    btn.classList.add('miss');
+    btn.querySelector('.duck-flag').textContent='✗';
+    btn.querySelector('.duck-eq').textContent=`${eq.a} × ${eq.b} = ${eq.answer}`;
+    const left=DUCK.maxMisses-duck.incorrect;
+    setDuckStatus(`Oops! ${eq.a} × ${eq.b} is ${eq.answer}, not ${eq.shown}. −${DUCK.missPenalty} points. ${left>0?`${left} miss${left===1?'':'es'} left.`:''}`,false);
+    shakeDuckBoard();
   }
   renderDuck();
-  if(duck.score>=duck.target) await finishDuck(true);
+  if(duck.score>=DUCK.goal){finishDuck('win');return;}
+  if(duck.incorrect>=DUCK.maxMisses){finishDuck('misses');return;}
+  setTimeout(()=>{ if(duck.active) refillDuck(btn); },eq.isTrue?450:900);
+}
+function setDuckStatus(msg,good){
+  const el=$('duckStatus');
+  el.textContent=msg;
+  el.className='msg duck-msg '+(good===true?'good':good===false?'bad':'');
+}
+function shakeDuckBoard(){
+  const el=$('duckCarnival');
+  el.classList.remove('shake');void el.offsetWidth;el.classList.add('shake');
 }
 function startDuck(){
   clearInterval(duck.timer);
-  duck={
-    timer:null,time:60,score:0,correct:0,incorrect:0,target:20,
-    active:true,rowStats:{1:0,2:0,3:0},lanes:{}
-  };
+  duck={timer:null,time:DUCK.time,score:0,correct:0,incorrect:0,active:true,rowStats:{1:0,2:0,3:0}};
   $('duckStart').disabled=true;
-  $('duckTime').textContent='60s';
-  $('duckScore').textContent='0';
-  $('duckGoal').textContent='20';
-  $('duckEquation').textContent='Tap the duck carrying the correct answer. Ducks never stop moving.';
-  $('duckStatus').textContent='Go! Pick any row. Higher rows are faster and worth more.';
+  $('duckCarnival').classList.remove('is-over','is-won');
+  $('duckOver').hidden=true;
+  setDuckStatus('Go! Tap only the TRUE ducks. Top row is faster and worth more.');
   populateDuckLanes();
   renderDuck();
-  duck.timer=setInterval(async()=>{
+  duck.timer=setInterval(()=>{
     duck.time--;
     renderDuck();
-    if(duck.time<=0) await finishDuck(false);
+    if(duck.time<=0) finishDuck('time');
   },1000);
 }
-async function finishDuck(success){
+async function finishDuck(reason){
   clearInterval(duck.timer);
   if(!duck.active)return;
   duck.active=false;
-  document.querySelectorAll('.duck-target').forEach(d=>d.classList.add('game-over'));
+  const success=reason==='win';
+  $('duckCarnival').classList.add('is-over');
+  if(success) $('duckCarnival').classList.add('is-won');
   $('duckStart').disabled=false;
-  const elapsed=Math.max(1,60-duck.time);
+  $('duckStart').textContent=success?'Play again':'Try again';
+  const over=$('duckOver');
+  over.querySelector('.duck-over-emoji').textContent=success?'🎉':reason==='misses'?'💦':'⏰';
+  over.querySelector('.duck-over-title').textContent=
+    success?'Hint earned!':reason==='misses'?'Game over!':'Time’s up!';
+  over.querySelector('.duck-over-text').textContent=
+    success?`${duck.score} points with ${duck.incorrect} miss${duck.incorrect===1?'':'es'}. Heading back to the map…`
+    :reason==='misses'?`${DUCK.maxMisses} wrong ducks. Slow down and check each fact. You had ${duck.score} points.`
+    :`You got ${duck.score} of ${DUCK.goal} points. So close. Try again!`;
+  over.hidden=false;
+  setDuckStatus(success?'Hint earned! 🎉':'Tap “Try again” to play another round.',success?true:null);
+  const elapsed=Math.max(1,DUCK.time-duck.time);
   try{
     await rpc('submit_score',{
       p_session_token:sessionToken,p_mode:'duck_dash',p_level:player.current_level,
       p_score:duck.score,p_correct:duck.correct,p_incorrect:duck.incorrect,
       p_duration_seconds:elapsed,
-      p_metadata:{earned_hint:success,target:20,time_left:duck.time,row_stats:duck.rowStats,control:'one_tap_ducks'}
+      p_metadata:{earned_hint:success,end:reason,target:DUCK.goal,time_left:duck.time,row_stats:duck.rowStats,control:'true_false_ducks'}
     });
   }catch(e){}
   if(success){
-    await savePlayer({hints:player.hints+1});
-    $('duckStatus').textContent=`20 points! Hint earned 🎉 Returning to the map…`;
-    setTimeout(()=>showPanel('orders'),1100);
-  }else{
-    $('duckStatus').textContent=`Time! You scored ${duck.score}/20. Tap Start to try again.`;
+    try{ await savePlayer({hints:player.hints+1}); }catch(e){}
+    setTimeout(()=>{ $('duckOver').hidden=true; showPanel('orders'); },1800);
   }
 }
 function renderDuck(){
   $('duckTime').textContent=duck.time+'s';
   $('duckScore').textContent=duck.score;
-  $('duckGoal').textContent=20;
+  $('duckGoal').textContent=DUCK.goal;
+  const misses=$('duckMisses');
+  if(misses){
+    misses.innerHTML=Array.from({length:DUCK.maxMisses},(_,i)=>`<i class="${i<duck.incorrect?'used':''}">${i<duck.incorrect?'✗':'○'}</i>`).join('');
+    misses.setAttribute('aria-label',`${duck.incorrect} of ${DUCK.maxMisses} misses`);
+  }
 }
 
 
@@ -639,6 +658,7 @@ $('rushStart').onclick=startRush;
 $('rushSubmit').onclick=rushAnswer;
 $('rushInput').addEventListener('keydown',e=>{if(e.key==='Enter')rushAnswer();});
 $('duckStart').onclick=startDuck;
+$('duckOverBtn').onclick=startDuck;
 $('rushBoardBtn').onclick=()=>{
   $('rushBoardBtn').classList.add('active');
   $('duckBoardBtn').classList.remove('active');
