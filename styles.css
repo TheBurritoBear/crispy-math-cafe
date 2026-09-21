@@ -600,3 +600,183 @@ body.level-up .topbar{
   .chicken-avatar{width:104px;height:122px;flex-basis:104px}
   .chicken-body{transform:scale(.9);transform-origin:50% 100%}
 }
+
+
+/* Duck Dash carnival lanes */
+.duck-carnival{
+  margin-top:18px;
+  border:3px solid var(--ink);
+  border-radius:20px;
+  overflow:hidden;
+  background:#2d6f87;
+  box-shadow:4px 5px 0 var(--ink);
+}
+.duck-lane{
+  display:grid;
+  grid-template-columns:124px minmax(0,1fr);
+  min-height:112px;
+  border-bottom:3px solid var(--ink);
+}
+.duck-lane:last-child{border-bottom:0}
+.duck-lane-label{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
+  padding:9px 8px;
+  text-align:center;
+  border-right:3px solid var(--ink);
+  background:#f8ead4;
+  z-index:3;
+}
+.duck-lane-label strong{font-size:1.05rem}
+.duck-lane-label span{font-size:.68rem;font-weight:900;color:var(--muted);line-height:1.1}
+.lane-3 .duck-lane-label{background:#ffd05c}
+.lane-2 .duck-lane-label{background:#ffdf91}
+.lane-1 .duck-lane-label{background:#fff0c4}
+.duck-lane-playfield{
+  position:relative;
+  overflow:hidden;
+  min-width:0;
+  min-height:112px;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.16),transparent 35%),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.08) 0 2px,transparent 2px 70px),
+    #78c8dc;
+}
+.lane-3 .duck-lane-playfield{background-color:#58b2c7}
+.lane-2 .duck-lane-playfield{background-color:#69bfd2}
+.lane-1 .duck-lane-playfield{background-color:#82cfdf}
+.duck-lane-playfield:after{
+  content:"";
+  position:absolute;
+  left:0;right:0;bottom:0;height:22px;
+  background:
+    radial-gradient(ellipse at 20% 100%,rgba(255,255,255,.42) 0 20%,transparent 21%) 0 0/58px 22px repeat-x;
+  pointer-events:none;
+}
+.duck-target{
+  position:absolute;
+  top:50%;
+  left:-150px;
+  width:126px;
+  min-height:72px;
+  padding:7px 8px 6px;
+  border:3px solid var(--ink);
+  border-radius:18px 18px 22px 22px;
+  background:#ffd84e;
+  box-shadow:3px 4px 0 var(--ink);
+  transform:translateY(-50%);
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  grid-template-areas:
+    "duck problem pts"
+    "duck problem pts";
+  align-items:center;
+  gap:5px;
+  animation-duration:var(--duck-speed);
+  animation-delay:var(--duck-delay);
+  animation-timing-function:linear;
+  animation-iteration-count:infinite;
+  will-change:left;
+  z-index:2;
+}
+.duck-target.ltr{animation-name:duckMoveRight}
+.duck-target.rtl{animation-name:duckMoveLeft}
+.duck-target:hover{filter:brightness(1.05)}
+.duck-target:active{
+  transform:translateY(-50%) scale(.98);
+  box-shadow:2px 2px 0 var(--ink);
+}
+.duck-target.selected{
+  outline:5px solid #fff;
+  filter:saturate(1.25) brightness(1.06);
+  z-index:5;
+}
+.duck-icon{
+  grid-area:duck;
+  font-size:2rem;
+  line-height:1;
+  filter:drop-shadow(1px 2px 0 rgba(44,23,16,.25));
+}
+.duck-problem{
+  grid-area:problem;
+  font-size:.93rem;
+  font-weight:1000;
+  white-space:nowrap;
+}
+.duck-points{
+  grid-area:pts;
+  font-size:.65rem;
+  font-weight:1000;
+  border:2px solid var(--ink);
+  border-radius:999px;
+  padding:3px 4px;
+  background:#fff5c8;
+}
+.row-3{background:#ffc83d}
+.row-2{background:#ffd85a}
+.row-1{background:#ffe77f}
+@keyframes duckMoveRight{
+  from{left:-150px}
+  to{left:calc(100% + 150px)}
+}
+@keyframes duckMoveLeft{
+  from{left:calc(100% + 150px)}
+  to{left:-150px}
+}
+.duck-answer-panel{
+  margin-top:16px;
+  padding:15px;
+  border:3px dashed #d98a3c;
+  border-radius:18px;
+  background:#fff8e8;
+}
+.duck-equation{
+  margin:0 0 12px;
+  font-size:clamp(1.45rem,4vw,2.3rem);
+  text-align:center;
+  letter-spacing:0;
+}
+.duck-answer-row{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:9px;
+}
+.duck-answer-row input{
+  font-size:1.15rem;
+  font-weight:1000;
+  text-align:center;
+}
+.duck-scorebar strong{font-variant-numeric:tabular-nums}
+.chicken-shop-preview{
+  min-height:132px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:visible;
+}
+.mini-chicken{
+  transform:scale(.78)!important;
+  transform-origin:center;
+  animation:none!important;
+  margin:-11px 0;
+}
+.shopItem .preview.chicken-shop-preview{font-size:inherit}
+@media(max-width:650px){
+  .duck-lane{
+    grid-template-columns:78px minmax(0,1fr);
+    min-height:100px;
+  }
+  .duck-lane-label{padding:7px 4px}
+  .duck-lane-label strong{font-size:.86rem}
+  .duck-lane-label span{font-size:.56rem}
+  .duck-lane-playfield{min-height:100px}
+  .duck-target{width:108px;min-height:65px;padding:5px 6px}
+  .duck-icon{font-size:1.65rem}
+  .duck-problem{font-size:.8rem}
+  .duck-points{font-size:.56rem}
+  .duck-answer-row{grid-template-columns:1fr}
+  .duck-answer-row button{width:100%}
+}
