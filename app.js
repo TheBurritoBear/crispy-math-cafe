@@ -8,6 +8,7 @@ let currentQ=null;
 let rush=freshRush();
 const DUCK={time:60,goal:20,missPenalty:2,maxMisses:5,perLane:3,speed:{1:20,2:16,3:12.5}};
 let duck=freshDuck();
+let duckOperationBags={};
 
 function freshRush(){return {timer:null,time:60,score:0,correct:0,incorrect:0,q:null,active:false};}
 function freshDuck(){return {timer:null,time:DUCK.time,score:0,correct:0,incorrect:0,active:false,rowStats:{1:0,2:0,3:0}};}
@@ -143,7 +144,7 @@ function openHintGame(){
 }
 function updateUnlockUI(){
   $('duckStart').disabled=duck.active;
-  $('duckIntro').textContent=`Every duck carries a times fact. Some are TRUE, some are FALSE. Tap only the true ones! Get ${DUCK.goal} points in ${DUCK.time} seconds. Wrong duck = −${DUCK.missPenalty} points, and ${DUCK.maxMisses} wrong ducks ends the game.`;
+  $('duckIntro').textContent=`Ducks mix addition, subtraction, and multiplication. Tap only TRUE equations! The middle row matches your level; the top row is slightly harder. Get ${DUCK.goal} points in ${DUCK.time} seconds. Wrong duck = −${DUCK.missPenalty} points, and ${DUCK.maxMisses} wrong ducks ends the game.`;
   renderDuck();
 }
 function updateUI(){
@@ -435,21 +436,46 @@ function chickenPreviewMarkup(style='plain',mini=false,color='natural',costume='
     </div>
   </div>`;
 }
-/* ===== Duck Dash: true-or-false times facts =====
-   Each duck carries a full equation. Tap the TRUE ones.
-   True duck: +row points. False duck: −2 points and a miss.
-   5 misses = game over. Reach the goal before time runs out to earn a hint. */
-function duckFactForRow(row){
+/* Duck Dash mixes all three operations in each row.
+   Multiplication uses the order level's limits; the top row stretches
+   only ONE factor by one, instead of using Rush's harder-question range. */
+function nextDuckOperation(row){
+  if(!duckOperationBags[row]?.length){
+    const bag=['+','−','×'];
+    for(let i=bag.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [bag[i],bag[j]]=[bag[j],bag[i]];
+    }
+    duckOperationBags[row]=bag;
+  }
+  return duckOperationBags[row].pop();
+}
+function duckLimitsForRow(row){
   const level=Math.max(1,player?.current_level||1);
-  // bottom row a little easier than your level, top row a little harder
-  if(row===1) return makeQ(Math.max(1,level-1));
-  if(row===3) return makeQ(level,true);
-  return makeQ(level);
+  const base=maxFactorForLevel(row===1?Math.max(1,level-1):level);
+  return {factor:base,stretch:row===3?Math.min(50,base+1):base,total:base*2+(row===3?2:0)};
+}
+function duckFactForRow(row){
+  const op=nextDuckOperation(row);
+  const limits=duckLimitsForRow(row);
+  const random=(min,max)=>min+Math.floor(Math.random()*(max-min+1));
+  let a,b,answer;
+  if(op==='×'){
+    a=random(1,limits.stretch);b=random(1,limits.factor);
+    if(Math.random()<.5)[a,b]=[b,a];
+    answer=a*b;
+  }else if(op==='+'){
+    answer=random(2,limits.total);
+    a=random(1,answer-1);b=answer-a;
+  }else{
+    a=random(1,limits.total);b=random(1,a);answer=a-b;
+  }
+  return {a,b,op,answer};
 }
 function duckWrongAnswer(q){
   const {a,b,answer}=q;
   const options=[answer+1,answer-1,answer+2,answer-2,answer+a,answer-a,answer+b,answer-b,answer+10,answer-10];
-  if(a!==b&&a+b!==answer) options.push(a+b);          // the classic "added instead of multiplied"
+  if(q.op==='×'&&a+b!==answer) options.push(a+b);          // the classic "added instead of multiplied"
   const good=[...new Set(options)].filter(v=>v>0&&v!==answer);
   return good[Math.floor(Math.random()*good.length)]??answer+1;
 }
@@ -458,7 +484,7 @@ function duckEquation(row,force){
   const q=duckFactForRow(row);
   const isTrue=typeof force==='boolean'?force:Math.random()<0.5;
   const shown=isTrue?q.answer:duckWrongAnswer(q);
-  return {a:q.a,b:q.b,answer:q.answer,shown,isTrue};
+  return {...q,shown,isTrue};
 }
 function buildDuckTarget(row,index){
   const speed=DUCK.speed[row];
@@ -486,8 +512,8 @@ function loadDuck(btn,eq){
   btn._eq=eq;
   btn.classList.remove('hit','miss','busy');
   btn.querySelector('.duck-flag').textContent='';
-  setDuckEqText(btn.querySelector('.duck-eq'),`${eq.a} × ${eq.b} = ${eq.shown}`);
-  btn.setAttribute('aria-label',`${eq.a} times ${eq.b} equals ${eq.shown}`);
+  setDuckEqText(btn.querySelector('.duck-eq'),`${eq.a} ${eq.op} ${eq.b} = ${eq.shown}`);
+  btn.setAttribute('aria-label',`${eq.a} ${{'+':'plus','−':'minus','×':'times'}[eq.op]} ${eq.b} equals ${eq.shown}`);
 }
 function laneHas(row,kind,except){
   return [...$('duckLane'+row).querySelectorAll('.duck-target')].some(d=>d!==except&&d._eq&&d._eq.isTrue===kind);
@@ -522,15 +548,15 @@ function shootDuck(btn){
     duck.rowStats[row]++;
     btn.classList.add('hit');
     btn.querySelector('.duck-flag').textContent='✓';
-    setDuckStatus(`Yes! ${eq.a} × ${eq.b} = ${eq.answer}. +${row} point${row===1?'':'s'}!`,true);
+    setDuckStatus(`Yes! ${eq.a} ${eq.op} ${eq.b} = ${eq.answer}. +${row} point${row===1?'':'s'}!`,true);
   }else{
     duck.incorrect++;
     duck.score=Math.max(0,duck.score-DUCK.missPenalty);
     btn.classList.add('miss');
     btn.querySelector('.duck-flag').textContent='✗';
-    setDuckEqText(btn.querySelector('.duck-eq'),`${eq.a} × ${eq.b} = ${eq.answer}`);
+    setDuckEqText(btn.querySelector('.duck-eq'),`${eq.a} ${eq.op} ${eq.b} = ${eq.answer}`);
     const left=DUCK.maxMisses-duck.incorrect;
-    setDuckStatus(`Oops! ${eq.a} × ${eq.b} is ${eq.answer}, not ${eq.shown}. −${DUCK.missPenalty} points. ${left>0?`${left} miss${left===1?'':'es'} left.`:''}`,false);
+    setDuckStatus(`Oops! ${eq.a} ${eq.op} ${eq.b} is ${eq.answer}, not ${eq.shown}. −${DUCK.missPenalty} points. ${left>0?`${left} miss${left===1?'':'es'} left.`:''}`,false);
     shakeDuckBoard();
   }
   renderDuck();
@@ -551,6 +577,7 @@ function shakeDuckBoard(){
 function resetDuck(){
   clearInterval(duck.timer);
   duck=freshDuck();
+  duckOperationBags={};
   $('duckStart').disabled=false;
   $('duckStart').textContent='Start Duck Dash';
   $('duckQuit').disabled=true;
