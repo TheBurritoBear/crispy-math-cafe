@@ -243,3 +243,190 @@ tbody tr:last-child td{border-bottom:0}
   .stacked-mobile{display:grid}
   .account-bar{align-items:flex-start}
 }
+
+/* Café restoration pass */
+.topbar{
+  position:relative;
+  overflow:hidden;
+}
+.topbar:after{
+  content:"치킨 · MATH · 치킨 · MATH · ";
+  position:absolute;
+  right:-24px;
+  bottom:-8px;
+  font-size:2.1rem;
+  font-weight:1000;
+  letter-spacing:.08em;
+  color:rgba(255,255,255,.055);
+  white-space:nowrap;
+  transform:rotate(-4deg);
+  pointer-events:none;
+}
+.tabs{
+  position:sticky;
+  top:6px;
+  z-index:8;
+  background:rgba(255,245,223,.93);
+  backdrop-filter:blur(7px);
+  border-radius:16px;
+}
+.shop-card{
+  position:relative;
+  overflow:hidden;
+}
+.shop-card:before{
+  content:"";
+  display:block;
+  height:9px;
+  margin:-20px -20px 17px;
+  background:repeating-linear-gradient(90deg,var(--red) 0 24px,var(--paper) 24px 48px);
+  border-bottom:3px solid var(--ink);
+}
+.chef-stage{
+  position:relative;
+  overflow:hidden;
+}
+.chef-stage:after{
+  content:"🍗";
+  position:absolute;
+  right:-9px;
+  bottom:-22px;
+  font-size:4.8rem;
+  opacity:.08;
+  transform:rotate(-20deg);
+}
+.chicken-avatar{
+  animation:chefBob 3.6s ease-in-out infinite;
+  transform-origin:50% 100%;
+}
+@keyframes chefBob{
+  0%,100%{transform:translateY(0) rotate(-2deg)}
+  50%{transform:translateY(-4px) rotate(2deg)}
+}
+.store-name-editor{
+  margin:10px 0 13px;
+  padding:10px;
+  background:#fff;
+  border:2px dashed #d98a3c;
+  border-radius:14px;
+}
+.store-name-label{
+  font-size:.68rem;
+  font-weight:1000;
+  letter-spacing:.11em;
+  color:var(--red);
+  margin-bottom:6px;
+}
+.store-name-row{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:7px;
+}
+.store-name-row input{
+  min-width:0;
+  padding:9px 10px;
+  border-width:2px;
+}
+.store-name-row button{
+  padding:8px 11px;
+  box-shadow:2px 3px 0 var(--ink);
+}
+.order-card{
+  position:relative;
+}
+.order-card:after{
+  content:"";
+  position:absolute;
+  inset:auto 0 0 0;
+  height:14px;
+  background:
+    linear-gradient(135deg,transparent 8px,var(--paper) 0) 0 0/16px 16px repeat-x,
+    linear-gradient(225deg,transparent 8px,var(--paper) 0) 8px 0/16px 16px repeat-x;
+  pointer-events:none;
+}
+.order-card-top{
+  background:
+    linear-gradient(90deg,rgba(255,255,255,.06) 50%,transparent 50%) 0 0/28px 28px,
+    var(--red);
+}
+.order-content{
+  position:relative;
+}
+.order-content:before{
+  content:"ORDER TICKET";
+  position:absolute;
+  top:11px;
+  right:18px;
+  color:rgba(44,23,16,.08);
+  font-weight:1000;
+  letter-spacing:.14em;
+  transform:rotate(2deg);
+}
+.number-pad button{
+  min-height:46px;
+  font-size:1.18rem;
+}
+.number-pad button:not(.pad-action){
+  background:linear-gradient(#fff,#fff8ec);
+}
+.serve-button{
+  background:linear-gradient(180deg,#ffd563,#ffbd31);
+}
+.feedback.pop{
+  animation:feedbackPop .42s cubic-bezier(.2,.9,.3,1.3);
+}
+@keyframes feedbackPop{
+  0%{transform:scale(.96);opacity:.4}
+  70%{transform:scale(1.035)}
+  100%{transform:scale(1);opacity:1}
+}
+body.level-up .topbar{
+  animation:levelGlow .7s ease;
+}
+@keyframes levelGlow{
+  0%,100%{filter:none}
+  50%{filter:brightness(1.22) saturate(1.2)}
+}
+.progress-track>div{
+  background:
+    repeating-linear-gradient(135deg,rgba(255,255,255,.24) 0 8px,transparent 8px 16px),
+    linear-gradient(90deg,var(--orange),var(--gold));
+}
+.sauce-chip{
+  position:relative;
+  overflow:hidden;
+}
+.sauce-chip.active:after{
+  content:"SERVING";
+  position:absolute;
+  right:-18px;
+  top:5px;
+  transform:rotate(35deg);
+  background:var(--red);
+  color:#fff;
+  padding:2px 19px;
+  font-size:.48rem;
+  letter-spacing:.08em;
+}
+.mode-card{
+  position:relative;
+  overflow:hidden;
+}
+.mode-card:before{
+  content:"";
+  position:absolute;
+  width:170px;
+  height:170px;
+  right:-75px;
+  top:-85px;
+  border:24px solid rgba(240,106,43,.08);
+  border-radius:50%;
+}
+.table-wrap tbody tr:nth-child(1) td{background:#fff5c2}
+.table-wrap tbody tr:nth-child(2) td{background:#f7f4ef}
+.table-wrap tbody tr:nth-child(3) td{background:#ffe5cf}
+@media(max-width:650px){
+  .tabs{top:4px}
+  .store-name-row{grid-template-columns:1fr}
+  .store-name-row button{width:100%}
+}
