@@ -6,7 +6,7 @@ let sessionToken=localStorage.getItem('cmc_session')||'';
 let player=null;
 let currentQ=null;
 let rush={timer:null,time:60,score:0,correct:0,incorrect:0,q:null,active:false};
-let duck={timer:null,time:60,score:0,correct:0,incorrect:0,target:20,active:false,selected:null,rowStats:{1:0,2:0,3:0}};
+let duck={timer:null,time:60,score:0,correct:0,incorrect:0,target:20,active:false,rowStats:{1:0,2:0,3:0},lanes:{}};
 
 const $=id=>document.getElementById(id);
 
@@ -330,22 +330,38 @@ function renderRush(){
 function duckProblemForRow(row){
   const level=Math.max(1,player?.current_level||1);
   const maxByRow={
-    1:Math.min(30,10+level*2),
-    2:Math.min(60,20+level*4),
-    3:Math.min(100,30+level*7)
+    1:Math.min(24,8+level*2),
+    2:Math.min(50,16+level*4),
+    3:Math.min(90,26+level*6)
   };
   const max=maxByRow[row]||20;
-  const isSubtract=Math.random()<0.45;
+  const isSubtract=Math.random()<0.42;
   if(isSubtract){
-    const a=2+Math.floor(Math.random()*(max-1));
-    const b=1+Math.floor(Math.random()*a);
+    const a=3+Math.floor(Math.random()*Math.max(2,max-2));
+    const b=1+Math.floor(Math.random()*Math.max(1,a));
     return {a,b,op:'−',answer:a-b,row,points:row};
   }
-  const a=1+Math.floor(Math.random()*Math.max(2,Math.floor(max*.65)));
-  const b=1+Math.floor(Math.random()*Math.max(2,Math.floor(max*.65)));
+  const partMax=Math.max(3,Math.floor(max*.58));
+  const a=1+Math.floor(Math.random()*partMax);
+  const b=1+Math.floor(Math.random()*partMax);
   return {a,b,op:'+',answer:a+b,row,points:row};
 }
-function duckProblemText(q){ return `${q.a} ${q.op} ${q.b}`; }
+function duckProblemText(q){ return `${q.a} ${q.op} ${q.b} = ?`; }
+function shuffled(values){
+  return [...values].sort(()=>Math.random()-.5);
+}
+function duckAnswerChoices(answer,row){
+  const spread=row===3?7:row===2?5:3;
+  const values=new Set([answer]);
+  let guard=0;
+  while(values.size<3&&guard++<50){
+    const delta=1+Math.floor(Math.random()*spread);
+    const sign=Math.random()<.5?-1:1;
+    values.add(Math.max(0,answer+(delta*sign)));
+  }
+  while(values.size<3) values.add(answer+values.size+1);
+  return shuffled([...values]);
+}
 function chickenPreviewMarkup(style='plain',mini=false){
   return `<div class="chicken-avatar ${mini?'mini-chicken':''}" data-style="${escapeHtml(style||'plain')}" aria-hidden="true">
     <div class="chef-hat"><span></span><span></span><span></span></div>
@@ -355,6 +371,12 @@ function chickenPreviewMarkup(style='plain',mini=false){
       <div class="eye eye-right"></div>
       <div class="beak"></div>
       <div class="wattle"></div>
+      <div class="pumpkin-suit">
+        <span class="pumpkin-eye pumpkin-eye-left"></span>
+        <span class="pumpkin-eye pumpkin-eye-right"></span>
+        <span class="pumpkin-nose"></span>
+        <span class="pumpkin-mouth"></span>
+      </div>
       <div class="wing wing-left"></div>
       <div class="wing wing-right"></div>
       <div class="tail"></div>
@@ -362,80 +384,81 @@ function chickenPreviewMarkup(style='plain',mini=false){
     </div>
   </div>`;
 }
-function buildDuckTarget(row,index,count=4){
-  const q=duckProblemForRow(row);
-  const speed={1:12,2:9,3:6.5}[row];
+function buildDuckTarget(row,index,count=3){
+  const speed={1:15.5,2:11.5,3:8.5}[row];
   const direction=row===2?'rtl':'ltr';
   const btn=document.createElement('button');
   btn.type='button';
   btn.className=`duck-target row-${row} ${direction}`;
   btn.dataset.row=row;
-  btn.dataset.answer=q.answer;
-  btn.dataset.a=q.a;
-  btn.dataset.b=q.b;
-  btn.dataset.op=q.op;
-  btn.dataset.points=row;
   btn.style.setProperty('--duck-speed',speed+'s');
   btn.style.setProperty('--duck-delay',(-index*(speed/count))+'s');
-  btn.innerHTML=`<span class="duck-icon">🦆</span><span class="duck-problem">${duckProblemText(q)}</span><span class="duck-points">+${row}</span>`;
-  btn.onclick=()=>selectDuckTarget(btn);
-  btn.addEventListener('animationiteration',()=>{
-    if(!duck.active||duck.selected?.el===btn)return;
-    refreshDuckTarget(btn);
-  });
+  btn.innerHTML=`<span class="duck-icon">🦆</span><span class="duck-answer">0</span><span class="duck-points">+${row}</span>`;
+  btn.onclick=()=>shootDuck(btn);
   return btn;
 }
-function refreshDuckTarget(btn){
-  const row=Number(btn.dataset.row)||1;
+function setupDuckLane(row,build=false){
   const q=duckProblemForRow(row);
-  btn.dataset.answer=q.answer;
-  btn.dataset.a=q.a;
-  btn.dataset.b=q.b;
-  btn.dataset.op=q.op;
-  const problem=btn.querySelector('.duck-problem');
-  if(problem) problem.textContent=duckProblemText(q);
-}
-function populateDuckLanes(){
-  [3,2,1].forEach(row=>{
-    const lane=$('duckLane'+row);
+  const answers=duckAnswerChoices(q.answer,row);
+  duck.lanes[row]={q,answers};
+  const question=$('duckRow'+row+'Question');
+  if(question) question.textContent=duckProblemText(q);
+  const lane=$('duckLane'+row);
+  if(build||!lane.children.length){
     lane.innerHTML='';
-    for(let i=0;i<4;i++) lane.appendChild(buildDuckTarget(row,i,4));
+    for(let i=0;i<3;i++) lane.appendChild(buildDuckTarget(row,i,3));
+  }
+  [...lane.querySelectorAll('.duck-target')].forEach((btn,i)=>{
+    const val=answers[i%answers.length];
+    btn.dataset.answer=val;
+    const answerEl=btn.querySelector('.duck-answer');
+    if(answerEl) answerEl.textContent=val;
   });
 }
-function selectDuckTarget(btn){
+function populateDuckLanes(){
+  [3,2,1].forEach(row=>setupDuckLane(row,true));
+}
+function pulseDuck(btn,kind){
+  btn.classList.remove('hit','miss');
+  void btn.offsetWidth;
+  btn.classList.add(kind);
+  setTimeout(()=>btn.classList.remove(kind),320);
+}
+async function shootDuck(btn){
   if(!duck.active)return;
-  if(duck.selected?.el) duck.selected.el.classList.remove('selected');
-  document.querySelectorAll('.duck-target').forEach(d=>d.style.animationPlayState='running');
-  btn.classList.add('selected');
-  btn.style.animationPlayState='paused';
-  duck.selected={
-    el:btn,
-    row:Number(btn.dataset.row),
-    points:Number(btn.dataset.points),
-    answer:Number(btn.dataset.answer),
-    text:`${btn.dataset.a} ${btn.dataset.op} ${btn.dataset.b}`
-  };
-  $('duckEquation').textContent=duck.selected.text+' = ?';
-  $('duckInput').value='';
-  $('duckInput').disabled=false;
-  $('duckSubmit').disabled=false;
-  $('duckInput').focus();
+  const row=Number(btn.dataset.row)||1;
+  const lane=duck.lanes[row];
+  if(!lane)return;
+  const val=Number(btn.dataset.answer);
+  const correct=val===lane.q.answer;
+  if(correct){
+    duck.correct++;
+    duck.score+=row;
+    duck.rowStats[row]++;
+    pulseDuck(btn,'hit');
+    $('duckStatus').textContent=`Bingo! +${row} point${row===1?'':'s'} from row ${row}.`;
+    setupDuckLane(row,false);
+  }else{
+    duck.incorrect++;
+    duck.score=Math.max(0,duck.score-1);
+    pulseDuck(btn,'miss');
+    $('duckStatus').textContent=`Miss! ${duckProblemText(lane.q).replace(' = ?','')} = ${lane.q.answer}. −1 point.`;
+  }
+  renderDuck();
+  if(duck.score>=duck.target) await finishDuck(true);
 }
 function startDuck(){
   clearInterval(duck.timer);
   duck={
     timer:null,time:60,score:0,correct:0,incorrect:0,target:20,
-    active:true,selected:null,rowStats:{1:0,2:0,3:0}
+    active:true,rowStats:{1:0,2:0,3:0},lanes:{}
   };
-  $('duckInput').value='';
-  $('duckInput').disabled=true;
-  $('duckSubmit').disabled=true;
   $('duckStart').disabled=true;
   $('duckTime').textContent='60s';
   $('duckScore').textContent='0';
   $('duckGoal').textContent='20';
-  $('duckEquation').textContent='Tap a duck to choose a problem.';
-  $('duckStatus').textContent='Go! Higher rows move faster and pay more points.';
+  $('duckEquation').textContent='Tap the duck carrying the correct answer. Ducks never stop moving.';
+  $('duckStatus').textContent='Go! Pick any row. Higher rows are faster and worth more.';
   populateDuckLanes();
   renderDuck();
   duck.timer=setInterval(async()=>{
@@ -444,49 +467,11 @@ function startDuck(){
     if(duck.time<=0) await finishDuck(false);
   },1000);
 }
-async function duckAnswer(){
-  if(!duck.active||!duck.selected)return;
-  const raw=$('duckInput').value.trim();
-  if(raw==='')return;
-  const val=Number(raw);
-  if(!Number.isFinite(val))return;
-
-  const target=duck.selected;
-  const correct=val===target.answer;
-  if(correct){
-    duck.correct++;
-    duck.score+=target.points;
-    duck.rowStats[target.row]++;
-    $('duckStatus').textContent=`Nice shot! +${target.points} point${target.points===1?'':'s'}.`;
-  }else{
-    duck.incorrect++;
-    duck.score=Math.max(0,duck.score-1);
-    $('duckStatus').textContent=`Miss! ${target.text} = ${target.answer}. −1 point.`;
-  }
-
-  target.el.classList.remove('selected');
-  target.el.style.animationPlayState='running';
-  refreshDuckTarget(target.el);
-  duck.selected=null;
-  $('duckEquation').textContent='Tap another duck.';
-  $('duckInput').value='';
-  $('duckInput').disabled=true;
-  $('duckSubmit').disabled=true;
-  renderDuck();
-
-  if(duck.score>=duck.target) await finishDuck(true);
-}
 async function finishDuck(success){
   clearInterval(duck.timer);
   if(!duck.active)return;
   duck.active=false;
-  if(duck.selected?.el){
-    duck.selected.el.classList.remove('selected');
-    duck.selected.el.style.animationPlayState='running';
-  }
-  document.querySelectorAll('.duck-target').forEach(d=>d.style.animationPlayState='paused');
-  $('duckInput').disabled=true;
-  $('duckSubmit').disabled=true;
+  document.querySelectorAll('.duck-target').forEach(d=>d.classList.add('game-over'));
   $('duckStart').disabled=false;
   const elapsed=Math.max(1,60-duck.time);
   try{
@@ -494,7 +479,7 @@ async function finishDuck(success){
       p_session_token:sessionToken,p_mode:'duck_dash',p_level:player.current_level,
       p_score:duck.score,p_correct:duck.correct,p_incorrect:duck.incorrect,
       p_duration_seconds:elapsed,
-      p_metadata:{earned_hint:success,target:20,time_left:duck.time,row_stats:duck.rowStats}
+      p_metadata:{earned_hint:success,target:20,time_left:duck.time,row_stats:duck.rowStats,control:'one_tap_ducks'}
     });
   }catch(e){}
   if(success){
@@ -594,8 +579,6 @@ $('rushStart').onclick=startRush;
 $('rushSubmit').onclick=rushAnswer;
 $('rushInput').addEventListener('keydown',e=>{if(e.key==='Enter')rushAnswer();});
 $('duckStart').onclick=startDuck;
-$('duckSubmit').onclick=duckAnswer;
-$('duckInput').addEventListener('keydown',e=>{if(e.key==='Enter')duckAnswer();});
 $('rushBoardBtn').onclick=()=>{
   $('rushBoardBtn').classList.add('active');
   $('duckBoardBtn').classList.remove('active');
