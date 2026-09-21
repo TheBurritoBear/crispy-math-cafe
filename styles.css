@@ -177,7 +177,9 @@ button:disabled{opacity:.45;cursor:not-allowed;filter:grayscale(.2)}
 .feedback.good,.feedback.bad{padding:9px;border:2px solid currentColor;background:#fff}
 .mode-card{padding:24px}
 .rush-play{display:grid;gap:16px;align-items:center}
-#rushNumberPad{border:0;padding:0;margin:16px auto 0;width:min(100%,320px);min-width:0}
+.rush-controls{width:min(100%,320px);margin:16px auto 0;min-width:0}
+#rushNumberPad{border:0;padding:0;margin:0;width:100%;min-width:0}
+#rushSubmit{width:100%;margin-top:12px;min-height:44px}
 #rushNumberPad button{min-height:44px}
 #rushInput{text-align:center;font-size:1.5rem;font-weight:900}
 @media(min-width:700px){.rush-play{grid-template-columns:minmax(0,1fr) minmax(0,320px)}}
