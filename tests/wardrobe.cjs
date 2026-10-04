@@ -13,7 +13,7 @@ function setup(overrides={},catalog=[]){
     if(name==='get_shop_items')return {data:catalog,error:null};
     if(name==='purchase_item'){
       if(!saved.purchased_items.includes(args.p_item_id)){
-        saved.coins-=args.p_item_id==='pink'?100:200;saved.purchased_items.push(args.p_item_id);
+        saved.coins-=catalog.find(i=>i.id===args.p_item_id)?.cost??(args.p_item_id==='pink'?100:200);saved.purchased_items.push(args.p_item_id);
       }
     }else if(name==='save_progress'){
       saved.extra_state={...saved.extra_state,...args.p_extra_state};saved.active_chicken=args.p_active_chicken;
@@ -64,4 +64,29 @@ test('owned pumpkin stays selectable below purchase level and preserves blue fea
  const unowned=setup({current_level:3,coins:1000},[item]);await unowned.run('realRenderShop()');
  const lockedButton=unowned.element('shopItems').innerHTML.match(/<button data-avatar-item="halloween_chicken"[^>]*>[^<]*<\/button>/)[0];
  assert.match(lockedButton,/disabled/);assert.match(lockedButton,/Unlock after Level 3/);
+});
+
+test('knights buy once, persist on reload, and preserve the chicken wardrobe',async()=>{
+ const item={id:'ember_blue',item_type:'character',cost:300,min_level:1,display_name:'Blue Ember Knight'};
+ const t=setup({extra_state:{avatar_color:'pink',avatar_costume:'firefighter',other_setting:true}},[item]);
+ await t.run('realRenderShop()');
+ await Promise.all([t.run("selectAvatarItem('character','ember_blue')"),t.run("selectAvatarItem('character','ember_blue')")]);
+ assert.equal(t.saved().coins,300);
+ assert.equal(t.calls.filter(c=>c.name==='purchase_item').length,1);
+ assert.equal(t.run('appearanceFor().character'),'ember_blue');
+ const restored=setup(t.saved());assert.equal(restored.run('appearanceFor().character'),'ember_blue');
+ const html=t.run("characterPreviewMarkup(appearanceFor().character,appearanceFor(),false,true)");
+ assert.match(html,/characters\/ember_blue.svg/);assert.doesNotMatch(html,/chicken-body/);
+ await t.run("selectAvatarItem('character','chicken')");
+ assert.equal(t.run('appearanceFor().character'),'chicken');
+ assert.equal(t.saved().extra_state.avatar_color,'pink');assert.equal(t.saved().extra_state.avatar_costume,'firefighter');
+ assert.equal(t.saved().extra_state.other_setting,true);
+ await t.run("selectAvatarItem('character','ember_blue')");assert.equal(t.saved().coins,300);
+});
+test('unowned or invalid characters fall back to chicken and cannot be bought without coins',async()=>{
+ const t=setup({coins:299,extra_state:{avatar_character:'ember_blue'}},[{id:'ember_blue',item_type:'character',cost:300,min_level:1}]);
+ assert.equal(t.run('appearanceFor().character'),'chicken');
+ await t.run('realRenderShop()');await t.run("selectAvatarItem('character','ember_blue')");
+ assert.equal(t.calls.filter(c=>c.name==='purchase_item').length,0);
+ const bad=setup({extra_state:{avatar_character:'unknown'}});assert.equal(bad.run('appearanceFor().character'),'chicken');
 });

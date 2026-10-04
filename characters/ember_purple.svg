@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 190" role="img" aria-label="Purple Ember Knight">
+<title>Purple Ember Knight</title>
+<ellipse cx="88" cy="178" rx="53" ry="8" fill="#291a39" opacity=".15"/>
+<g stroke="#242137" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+<!-- cloak and armored boots -->
+<path d="M65 87L48 157 75 150 93 164 122 154 108 86Z" fill="#663598"/>
+<path d="M68 139L65 165 56 174 80 174 87 143M95 141L98 173 123 173 114 163 112 138" fill="#42445c"/>
+<path d="M65 165L80 165M100 164L114 164" fill="none" stroke="#a0a9be"/>
+<!-- flame head -->
+<path d="M60 91C43 78 45 59 56 45L62 57C64 37 78 26 83 9 99 22 98 35 104 40L114 24C112 47 132 55 130 74 129 90 112 101 90 102Z" fill="#b371ee"/>
+<path d="M66 84C61 73 68 61 77 51L79 64C90 53 88 42 91 35 107 54 99 57 109 66L116 58C124 78 112 95 91 95Z" fill="#f4ceff" stroke="none"/>
+<!-- dark mask and glowing eyes -->
+<path d="M61 72L79 66 91 72 108 66 120 75 114 94 90 103 66 94Z" fill="#282639"/>
+<path d="M70 78L82 82 80 89 70 86M99 82L110 77 109 86 100 89" fill="#f4ceff" stroke="none"/>
+<!-- scarf, chest armor, belt -->
+<path d="M61 96L86 101 112 96 117 108 91 115 60 109Z" fill="#b371ee"/>
+<path d="M68 109L103 110 111 142 91 153 67 141Z" fill="#59627b"/>
+<path d="M76 112L90 119 102 111 100 132 88 139 77 132Z" fill="#8b9ab2"/>
+<path d="M68 137L109 138 109 145 68 144Z" fill="#333247"/>
+<path d="M84 137H95V147H84Z" fill="#ffc766"/>
+<!-- arms and gauntlets -->
+<path d="M62 109L48 119 50 139 63 143 69 128M108 110L121 117 123 135 113 142 105 128" fill="#59627b"/>
+<path d="M48 128L63 130 63 144 49 141M113 128L127 128 129 141 116 144" fill="#663598"/>
+<!-- sword carried beside the character -->
+<path d="M139 67L150 81 141 135 133 135 131 81Z" fill="#ddeaf2"/>
+<path d="M139 77L139 128" fill="none" stroke="#95bdcd" stroke-width="2"/>
+<path d="M126 134L149 138 147 145 124 141Z" fill="#ffc766"/>
+<path d="M132 143L140 145 136 163 129 161Z" fill="#663598"/>
+<path d="M129 162L137 164" stroke="#ffc766"/>
+</g>
+<path d="M35 62L38 55 42 64 39 69Z M136 33L140 25 143 34 140 39Z" fill="#b371ee"/>
+</svg>

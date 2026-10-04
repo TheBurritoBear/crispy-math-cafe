@@ -29,12 +29,14 @@ const sauces=[
 
 const avatarColors={natural:'Natural',bright_green:'Bright green',pink:'Pink',blue:'Blue'};
 const avatarCostumes={none:'No costume',dress:'Party dress',cowboy:'Cowboy',firefighter:'Firefighter',halloween_chicken:'Pumpkin costume'};
+const avatarCharacters={chicken:'Chicken chef',ember_blue:'Blue Ember Knight',ember_orange:'Orange Ember Knight',ember_green:'Green Ember Knight',ember_purple:'Purple Ember Knight'};
 let shopActionBusy=false;
 let shopCatalog=[];
 function appearanceFor(p=player){
   const extra=p?.extra_state||{};
   const legacy=p?.active_chicken==='halloween_chicken'?'halloween_chicken':'none';
   return {
+    character:Object.hasOwn(avatarCharacters,extra.avatar_character)&&(extra.avatar_character==='chicken'||p?.purchased_items?.includes(extra.avatar_character))?extra.avatar_character:'chicken',
     color:Object.hasOwn(avatarColors,extra.avatar_color)?extra.avatar_color:'natural',
     costume:Object.hasOwn(avatarCostumes,extra.avatar_costume)?extra.avatar_costume:legacy,
     sauce:sauces.some(s=>s.id===p?.active_chicken)?p.active_chicken:'plain'
@@ -42,7 +44,7 @@ function appearanceFor(p=player){
 }
 function appearancePatch(category,id){
   const current=appearanceFor();
-  return {extra_state:{...(player.extra_state||{}),avatar_color:category==='color'?id:current.color,avatar_costume:category==='costume'?id:current.costume}};
+  return {extra_state:{...(player.extra_state||{}),avatar_character:category==='character'?id:current.character,avatar_color:category==='color'?id:current.color,avatar_costume:category==='costume'?id:current.costume}};
 }
 
 function maxFactorForLevel(level){
@@ -170,8 +172,9 @@ function updateUI(){
     ?`Let’s fill ${goal} correct orders, at your own pace.`
     :`Level ${player.current_level} takes ${goal} correct orders. Keep the kitchen moving!`;
   const look=appearanceFor();
-  $('chickenAvatar').outerHTML=chickenPreviewMarkup(look.sauce,false,look.color,look.costume,true);
-  $('chickenStyleLabel').textContent=avatarColors[look.color]+' chicken'+(look.costume==='none'?'':' · '+avatarCostumes[look.costume]);
+  $('chickenAvatar').outerHTML=characterPreviewMarkup(look.character,look,false,true);
+  $('avatarTitle').textContent=look.character==='chicken'?'Your chicken chef':'Your Ember Knight';
+  $('chickenStyleLabel').textContent=look.character==='chicken'?avatarColors[look.color]+' chicken'+(look.costume==='none'?'':' · '+avatarCostumes[look.costume]):avatarCharacters[look.character];
   const next=sauces.find(s=>s.level>player.current_level);
   $('nextUnlockText').textContent=next
     ?`Complete level ${next.level-1}: unlock ${next.name}`
@@ -425,6 +428,12 @@ function renderRush(){
   $('rushNumberPad').disabled=!rush.active;
   $('rushTime').textContent=rush.time+'s';
   $('rushScore').textContent=rush.score;
+}
+
+// Separate full-body characters; chicken wardrobe remains saved when switching.
+function characterPreviewMarkup(character,look,mini=false,main=false){
+  if(character==='chicken'||!Object.hasOwn(avatarCharacters,character))return chickenPreviewMarkup(look.sauce,mini,look.color,look.costume,main);
+  return `<div ${main?'id="chickenAvatar"':''} class="ember-avatar ${mini?'ember-mini':''}" data-character="${character}"><img src="characters/${character}.svg" alt="${avatarCharacters[character]}" width="180" height="190" /></div>`;
 }
 
 function chickenPreviewMarkup(style='plain',mini=false,color='natural',costume='none',main=false){
@@ -689,11 +698,11 @@ async function renderShop(){
   try{
     shopCatalog=await rpc('get_shop_items');
     const look=appearanceFor();
-    $('shopItems').innerHTML=[['color','Colors','100 coins each · only your chicken changes color'],['costume','Costumes','200 coins each · keep your selected chicken color']].map(([category,title,subtitle])=>{
+    $('shopItems').innerHTML=[['character','Characters','300 coins each · become an Ember Knight or switch back to your chicken'],['color','Colors','100 coins each · only your chicken changes color'],['costume','Costumes','200 coins each · keep your selected chicken color']].map(([category,title,subtitle])=>{
       const items=shopCatalog.filter(i=>i.item_type===category);
-      const defaultId=category==='color'?'natural':'none';
-      const defaultName=category==='color'?'Natural feathers':'No costume';
-      const options=[{id:defaultId,display_name:defaultName,description:category==='color'?'Use your unlocked sauce color.':'Back to your chef hat.',free:true},...items];
+      const defaultId=category==='character'?'chicken':category==='color'?'natural':'none';
+      const defaultName=category==='character'?'Chicken chef':category==='color'?'Natural feathers':'No costume';
+      const options=[{id:defaultId,display_name:defaultName,description:category==='character'?'Your original chef. Switch back for free anytime.':category==='color'?'Use your unlocked sauce color.':'Back to your chef hat.',free:true},...items];
       return `<section class="shop-category"><h3>${title}</h3><p class="muted">${subtitle}</p><div class="shop-grid">${options.map(i=>{
         const owned=i.free||player.purchased_items.includes(i.id);
         const locked=!owned&&player.current_level<i.min_level;
@@ -703,7 +712,7 @@ async function renderShop(){
         const label=equipped?'Equipped':owned?'Equip':locked?`Unlock after Level ${i.min_level-1}`:`Buy · ${i.cost} coins`;
         const disabled=shopActionBusy||equipped||locked||(!owned&&player.coins<i.cost);
         return `<div class="shopItem ${equipped?'is-equipped':''}">
-          <div class="preview chicken-shop-preview">${chickenPreviewMarkup(look.sauce,true,previewColor,previewCostume)}</div>
+          <div class="preview chicken-shop-preview">${category==='character'?characterPreviewMarkup(i.id,look,true):chickenPreviewMarkup(look.sauce,true,previewColor,previewCostume)}</div>
           <div><strong>${escapeHtml(i.display_name)}</strong><div class="shop-meta">${escapeHtml(i.description||'')}</div></div>
           <button data-avatar-item="${escapeHtml(i.id)}" data-category="${category}" ${disabled?'disabled':''} aria-pressed="${equipped}">${label}</button>
         </div>`;
@@ -713,8 +722,8 @@ async function renderShop(){
   }catch(e){$('shopItems').textContent='Shop unavailable. Open the shop again to retry.';}
 }
 async function selectAvatarItem(category,id){
-  if(shopActionBusy||!['color','costume'].includes(category))return;
-  const free=(category==='color'&&id==='natural')||(category==='costume'&&id==='none');
+  if(shopActionBusy||!['character','color','costume'].includes(category))return;
+  const free=(category==='character'&&id==='chicken')||(category==='color'&&id==='natural')||(category==='costume'&&id==='none');
   const item=shopCatalog.find(i=>i.id===id&&i.item_type===category);
   if(!free&&!item)return;
   if(!free&&(!player.purchased_items.includes(id))&&(player.current_level<item.min_level||player.coins<item.cost))return;
