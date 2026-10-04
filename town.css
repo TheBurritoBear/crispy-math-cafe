@@ -232,12 +232,7 @@
   width:40px;height:40px;border-radius:11px;font-size:18px;cursor:pointer;
   color:#2A1A11;font-family:inherit;touch-action:manipulation}
 
-/* iPad landscape: keep the map a comfortable square that fits the screen */
-/* keeps the whole map on screen under the header + tabs */
-@media (min-width:860px) and (orientation:landscape){
-  .town-map{max-width:min(100%, max(380px, calc(100vh - 360px)))}
-  @supports (height:100dvh){.town-map{max-width:min(100%, max(380px, calc(100dvh - 360px)))}}
-}
+/* The square map fills its panel in both orientations; the page can scroll vertically. */
 /* portrait / one-column: the town comes first, the shop card below it */
 @media (max-width:850px){
   .game-grid > .town-col{order:-1}
